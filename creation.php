@@ -37,10 +37,10 @@ if (isset($_POST['signup'])) {
         exit();
     }
 
-    $query = "INSERT INTO `utilisateurs` (`prenom`, `nom`, `email`, `mdp`, `role`) VALUES ('$prenom', '$nom', '$email', '$mdp', '$role')";
+    $query = "INSERT INTO `utilisateurs` (`prenom`, `nom`, `email`, `mdp`, `role`) VALUES ('$prenom', '$nom', '$email', '$mdp_hash', '$role')";
     if (mysqli_query($conn, $query)) {
         $last_id = mysqli_insert_id($conn);
-        array_push($succes, "Compte crée !");
+        array_push($succes, "Compte crée");
     } else {
         array_push($erreurs, mysqli_error($conn));
     }
