@@ -61,7 +61,7 @@ if (!$_SESSION["item_panier"]) {
                 <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                     <li>
                         <a class="justify-between">
-                            Profil
+                            Mon compte
                         </a>
                     </li>
                     <li><a>Paramètres</a></li>

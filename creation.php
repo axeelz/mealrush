@@ -43,11 +43,19 @@ if (isset($_POST['signup'])) {
         array_push($succes, "Compte crée");
     } else {
         array_push($erreurs, mysqli_error($conn));
+        exit();
     }
 
     if ($role == 'restaurateur') {
+        $nom_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom_resto']));
+        $image_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_resto']));
         if (isset($last_id)) {
-            $query = "INSERT INTO `restaurants` (`prenom`, `nom`, `email`, `mdp`, `role`) VALUES ('$prenom', '$nom', '$email', '$mdp', '$role')";
+            $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$last_id')";
+            if (mysqli_query($conn, $query)) {
+                array_push($succes, "Compte et restaurant crées");
+            } else {
+                array_push($erreurs, mysqli_error($conn));
+            }
         } else {
             array_push($erreurs, "Erreur lors de la création de l'utilisateur, impossible de créer le restaurant");
         }
