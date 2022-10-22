@@ -1,6 +1,6 @@
 <?php
 session_start();
-if ($_SESSION["connecte"]) {
+if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     header("location: index.php");
     exit;
 }
@@ -13,21 +13,43 @@ try {
 }
 
 if (isset($_POST['login'])) {
-    $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
-    $mdp = mysqli_real_escape_string($conn, htmlspecialchars($_POST['mdp']));
-    $mdp_hash = password_hash($mdp, PASSWORD_BCRYPT);
+    do {
+        // On récupère les valeurs du formulaire
+        $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
+        $mdp = mysqli_real_escape_string($conn, htmlspecialchars($_POST['mdp']));
 
-    $query = "SELECT * FROM utilisateurs WHERE email='$email' AND mdp='$mdp_hash'";
-    $result = mysqli_query($conn, $query);
-    // $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-    $count = mysqli_num_rows($result);
+        // On cherche dans la base de données une entrée correspondante à l'utilisateur
+        $query = "SELECT * FROM utilisateurs WHERE email='$email'";
+        $result = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($result);
 
-    if ($count == 1) {
-        array_push($succes, "Connecté");
-        // session start
-    } else {
-        array_push($erreurs, "Nom d'utilisateur ou mot de passe invalide");
-    }
+        // Soit on a bien trouvé une valeur, soit on renvoie false
+        $mdpBDD = $row['mdp'] ?? false;
+
+        if ($mdpBDD == false) {
+            array_push($erreurs, "Aucun compte trouvé avec cette adresse e-mail");
+            break;
+        }
+
+        $prenom = $row['prenom'];
+        $nom = $row['nom'];
+
+        // Puis on vérifie que le mot de passe hashé contenu dans la base de données
+        // correspond bien avec ce que l'utilisateur a entré
+        if (password_verify($mdp, $mdpBDD)) {
+            // On définit les variables de session et on redirige vers la page d'accueil
+            $_SESSION['connecte'] = true;
+            $_SESSION['email'] = $email;
+            $_SESSION['prenom'] = $prenom;
+            $_SESSION['nom'] = $nom;
+            // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
+            $_SESSION['successMessage'] = "Bienvenue, " . $_SESSION['prenom'] . " " . $_SESSION['nom'];
+            header('location: index.php');
+            exit();
+        } else {
+            array_push($erreurs, "Mot de passe invalide");
+        }
+    } while (0);
 }
 ?>
 
@@ -55,7 +77,7 @@ if (isset($_POST['login'])) {
             <h1 class="text-xl font-bold text-stale-900 md:text-2xl mb-5">
                 Connectez vous à votre compte
             </h1>
-            <form class="form-control w-full max-w-xs md:max-w-md" method="POST" action="#">
+            <form class="form-control w-full max-w-xs md:max-w-md" method="post">
                 <label for="email" class="label">
                     <span class="label-text">Votre adresse e-mail</span>
                 </label>

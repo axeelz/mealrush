@@ -1,67 +1,99 @@
 <?php
 session_start();
-if ($_SESSION["connecte"]) {
+if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     header("location: index.php");
     exit;
 }
 
 include 'ouvrirconnexion.php';
 try {
+    // On se connecte à la BDD
     $conn = OuvrirConnexion();
-} catch (Exception $th) {
-    array_push($erreurs, $th->getMessage());
+
+    // On récupère les tags des resto pour les afficher
+    $tags = array();
+    $query = "SELECT * FROM tags";
+    $result = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        array_push($tags, $row["nom_tag"]);
+    }
+} catch (\Exception $e) {
+    array_push($erreurs, $e->getMessage());
 }
 
-if (isset($_POST['signup'])) {
-    $prenom = mysqli_real_escape_string($conn, htmlspecialchars($_POST['prenom']));
-    $nom = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom']));
-    $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
-    $mdp = mysqli_real_escape_string($conn, htmlspecialchars($_POST['mdp']));
-    $mdp_hash = password_hash($mdp, PASSWORD_BCRYPT);
+// Après avoir cliqué sur création de compte
+if (isset($_POST['signup']) && isset($conn)) {
+    do {
+        // On récupère les valeurs du formulaire
+        $prenom = mysqli_real_escape_string($conn, htmlspecialchars($_POST['prenom']));
+        $nom = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom']));
+        $email = mysqli_real_escape_string($conn, htmlspecialchars($_POST['email']));
+        $mdp = mysqli_real_escape_string($conn, htmlspecialchars($_POST['mdp']));
+        $mdp_hash = password_hash($mdp, PASSWORD_BCRYPT);
 
-    $role = $_POST['role'];
-    // Verification que le rôle est bein un de ces deux là (car on peut le modifier en inspectant l'élement)
-    if ($role != 'utilisateur' && $role != 'restaurateur') {
-        array_push($erreurs, "Le rôle n'est pas correct");
-        exit();
-    }
+        // Récupération du rôle et verif qu'il est un de ces deux choix (car on peut le modifier en inspectant l'élement)
+        $role = $_POST['role'];
+        if ($role != 'utilisateur' && $role != 'restaurateur') {
+            array_push($erreurs, "Le rôle n'est pas correct");
+            break;
+        }
 
-    // Verification que l'e-mail est pas déjà dans la BDD
-    $query = "SELECT * FROM utilisateurs WHERE email='$email'";
-    $result = mysqli_query($conn, $query);
-    // $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-    $count = mysqli_num_rows($result);
+        // Verification que l'e-mail est pas déjà dans la BDD
+        $query = "SELECT * FROM utilisateurs WHERE email='$email'";
+        $result = mysqli_query($conn, $query);
+        $count = mysqli_num_rows($result);
 
-    if ($count > 0) {
-        array_push($erreurs, "Cet e-mail est déjà utilisé");
-        exit();
-    }
+        // Si le mail est déjà dans la BDD
+        if ($count > 0) {
+            array_push($erreurs, "Cet e-mail est déjà utilisé");
+            break;
+        }
 
-    $query = "INSERT INTO `utilisateurs` (`prenom`, `nom`, `email`, `mdp`, `role`) VALUES ('$prenom', '$nom', '$email', '$mdp_hash', '$role')";
-    if (mysqli_query($conn, $query)) {
-        $last_id = mysqli_insert_id($conn);
-        array_push($succes, "Compte crée");
-    } else {
-        array_push($erreurs, mysqli_error($conn));
-        exit();
-    }
+        // Insertion d'un nouveau compte
+        $query = "INSERT INTO `utilisateurs` (`prenom`, `nom`, `email`, `mdp`, `role`) VALUES ('$prenom', '$nom', '$email', '$mdp_hash', '$role')";
+        if (mysqli_query($conn, $query)) {
+            // On récupère l'id utilisateur de l'utilisateur qu'on vient d'ajouter
+            // car on en a besoin pour lier un restaurateur à un utilisateur
+            $last_id = mysqli_insert_id($conn);
+            if ($role == 'utilisateur')
+                array_push($succes, "Compte crée");
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
 
-    if ($role == 'restaurateur') {
-        $nom_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom_resto']));
-        $image_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_resto']));
-        if (isset($last_id)) {
+        // Si restaurateur, on ajoute également un nouveau restaurant
+        if ($role == 'restaurateur') {
+            // On récupère les valeurs du formulaire
+            $nom_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom_resto']));
+            $image_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_resto']));
+
+            // Si l'insertion du compte utilisateur a bien fonctionné seulement
+            if (!isset($last_id)) {
+                array_push($erreurs, "Erreur lors de la création de l'utilisateur, impossible de créer le restaurant");
+                break;
+            }
+
+            // Si tout est bon, on crée un restaurant
             $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$last_id')";
             if (mysqli_query($conn, $query)) {
                 array_push($succes, "Compte et restaurant crées");
             } else {
                 array_push($erreurs, mysqli_error($conn));
+                break;
             }
-        } else {
-            array_push($erreurs, "Erreur lors de la création de l'utilisateur, impossible de créer le restaurant");
-        }
-    }
 
-    FermerConnexion($conn);
+            // Ajout des tags correspondants aux restos dans la BDD
+            $checkboxes = $_POST['tags'];
+            foreach ($checkboxes as $c) {
+                echo $c;
+                array_push($succes, $c);
+            }
+        }
+
+        FermerConnexion($conn);
+    } while (0);
+} else {
 }
 ?>
 
@@ -89,7 +121,7 @@ if (isset($_POST['signup'])) {
             <h1 class="text-xl font-bold text-stale-900 md:text-2xl mb-5">
                 Créer un compte
             </h1>
-            <form class="form-control w-full max-w-xs md:max-w-md" method="POST" action="#">
+            <form class="form-control w-full max-w-xs md:max-w-md" method="post">
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div id="row-1">
                         <label for="prenom" class="label">
@@ -134,8 +166,6 @@ if (isset($_POST['signup'])) {
                         <span class="label-text">Je suis utilsateur</span>
                         <input type="radio" name="role" value="utilisateur" id="utilisateur" class="radio" checked />
                     </label>
-                </div>
-                <div class="form-control">
                     <label class="label cursor-pointer">
                         <span class="label-text">Je suis restaurateur</span>
                         <input type="radio" name="role" value="restaurateur" id="restaurateur" class="radio" />
@@ -164,12 +194,21 @@ if (isset($_POST['signup'])) {
                         </div>
                         <div class="collapse-content">
                             <div class="form-control">
-                                <label class="label cursor-pointer">
-                                    <!-- SELECT * FROM tags -->
-                                    <span class="label-text">Fast-food</span>
-                                    <input type="checkbox" class="checkbox" />
-                                </label>
+                                <?php foreach ($tags as $t) : ?>
+                                    <label class="label cursor-pointer">
+                                        <span class="label-text"><?php echo $t ?></span>
+                                        <input type="checkbox" class="checkbox" name="tags[]" value="<?php echo $t ?>" />
+                                    </label>
+                                <?php endforeach; ?>
                             </div>
+                        </div>
+                    </div>
+                    <div class="alert shadow-lg mt-5">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Il y aura une vérification</span>
                         </div>
                     </div>
                 </div>

@@ -30,19 +30,6 @@
             </div>
         </div>
     </div>
-    <div class="" id="tags-container"></div>
-    <div class="my-5 ml-5 max-w-full" id="cards-container">
-        <div class="card w-1/2 shadow-xl">
-            <figure><img src="https://business.ladn.eu/wp-content/uploads/2021/11/Sans-titre-3-1.jpg" alt="McDonald's" /></figure>
-            <div class="card-body">
-                <h2 class="card-title">McDonald's</h2>
-                <p>On ne les présente plus.</p>
-                <div class="card-actions justify-end">
-                    <button class="btn bg-primary border-none text-black hover:text-white">Commander</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <?php include('footer.php'); ?>
 

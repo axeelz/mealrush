@@ -1,7 +1,11 @@
 <?php
-session_start();
+// On préserve la session que si elle n'est pas déjà crée (dans index par exemple)
+if (!isset($_SESSION))
+    session_start();
 
-if (!$_SESSION["connecte"]) {
+if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
+    $isConnecte = true;
+} else {
     $isConnecte = false;
 }
 
@@ -60,11 +64,10 @@ if (!$_SESSION["item_panier"]) {
                 </label>
                 <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                     <li>
-                        <a class="justify-between">
+                        <a class="justify-between" href="compte.php">
                             Mon compte
                         </a>
                     </li>
-                    <li><a>Paramètres</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>
                 </ul>
             </div>
