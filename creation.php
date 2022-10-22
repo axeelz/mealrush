@@ -17,8 +17,8 @@ try {
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         array_push($tags, $row["nom_tag"]);
     }
-} catch (\Exception $e) {
-    array_push($erreurs, $e->getMessage());
+} catch (\Throwable $th) {
+    array_push($erreurs, $th->getMessage());
 }
 
 // Après avoir cliqué sur création de compte
@@ -86,7 +86,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             // Ajout des tags correspondants aux restos dans la BDD
             $checkboxes = $_POST['tags'];
             foreach ($checkboxes as $c) {
-                echo $c;
+                // inserer les tags
                 array_push($succes, $c);
             }
         }

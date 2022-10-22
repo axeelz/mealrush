@@ -8,7 +8,7 @@ if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
 include 'ouvrirconnexion.php';
 try {
     $conn = OuvrirConnexion();
-} catch (Exception $th) {
+} catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
 }
 
