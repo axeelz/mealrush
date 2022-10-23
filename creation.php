@@ -31,6 +31,11 @@ if (isset($_POST['signup']) && isset($conn)) {
         $mdp = mysqli_real_escape_string($conn, htmlspecialchars($_POST['mdp']));
         $mdp_hash = password_hash($mdp, PASSWORD_BCRYPT);
 
+        if (empty($prenom) || empty($nom) || empty($email) || empty($mdp)) {
+            array_push($erreurs, "Un des champs requis est vide");
+            break;
+        }
+
         // Récupération du rôle et verif qu'il est un de ces deux choix (car on peut le modifier en inspectant l'élement)
         $role = $_POST['role'];
         if ($role != 'utilisateur' && $role != 'restaurateur') {
@@ -54,7 +59,7 @@ if (isset($_POST['signup']) && isset($conn)) {
         if (mysqli_query($conn, $query)) {
             // On récupère l'id utilisateur de l'utilisateur qu'on vient d'ajouter
             // car on en a besoin pour lier un restaurateur à un utilisateur
-            $last_id = mysqli_insert_id($conn);
+            $id_utilisateur = mysqli_insert_id($conn);
             // Compté crée !
         } else {
             array_push($erreurs, mysqli_error($conn));
@@ -68,15 +73,15 @@ if (isset($_POST['signup']) && isset($conn)) {
             $image_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_resto']));
 
             // Si l'insertion du compte utilisateur a bien fonctionné seulement
-            if (!isset($last_id)) {
+            if (!isset($id_utilisateur)) {
                 array_push($erreurs, "Erreur lors de la création de l'utilisateur, impossible de créer le restaurant");
                 break;
             }
 
             // Si tout est bon, on crée un restaurant
-            $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$last_id')";
+            $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur')";
             if (mysqli_query($conn, $query)) {
-                $last_id = mysqli_insert_id($conn);
+                $id_restaurant = mysqli_insert_id($conn);
                 // Restaurant crée !
             } else {
                 array_push($erreurs, mysqli_error($conn));
@@ -94,7 +99,7 @@ if (isset($_POST['signup']) && isset($conn)) {
                 $count = mysqli_num_rows($result);
 
                 if ($count == 1) {
-                    $query = "INSERT INTO `restaurants_tags` (`id_restaurant`, `id_tag`) VALUES ('$last_id', '$tag_id')";
+                    $query = "INSERT INTO `restaurants_tags` (`id_restaurant`, `id_tag`) VALUES ('$id_restaurant', '$tag_id')";
                     if (!mysqli_query($conn, $query)) {
                         array_push($erreurs, "Impossible d'ajouter les tags");
                         break;
@@ -114,8 +119,10 @@ if (isset($_POST['signup']) && isset($conn)) {
         $_SESSION['prenom'] = $prenom;
         $_SESSION['nom'] = $nom;
         $_SESSION['role'] = $role;
+        $_SESSION['id_utilisateur'] = $id_utilisateur;
 
         if ($role == 'restaurateur') {
+            $_SESSION['id_restaurant'] = $id_restaurant;
             $_SESSION['successMessage'] = "Compte et restaurant crées";
             header('location: restaurateur.php');
             exit();
@@ -215,7 +222,7 @@ if (isset($_POST['signup']) && isset($conn)) {
                     <label for="image_resto" class="label">
                         <span class="label-text">URL d'une image du restaurant</span>
                     </label>
-                    <input type="url" name="image_resto" id="image_resto" placeholder="https://test.png" class="input input-bordered bg-slate-100 w-full mb-5" />
+                    <input type="url" name="image_resto" id="image_resto" placeholder="https://google.com/image.jpg" class="input input-bordered bg-slate-100 w-full mb-5" />
                     <div tabindex="0" class="collapse collapse-arrow border border-base-300 rounded-box">
                         <input type="checkbox" />
                         <div class="collapse-title">

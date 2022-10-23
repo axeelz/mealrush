@@ -34,6 +34,7 @@ if (isset($_POST['login'])) {
         $prenom = $row['prenom'];
         $nom = $row['nom'];
         $role = $row['role'];
+        $id_utilisateur = $row['id'];
 
         // Puis on vérifie que le mot de passe hashé contenu dans la base de données
         // correspond bien avec ce que l'utilisateur a entré
@@ -44,6 +45,7 @@ if (isset($_POST['login'])) {
             $_SESSION['prenom'] = $prenom;
             $_SESSION['nom'] = $nom;
             $_SESSION['role'] = $role;
+            $_SESSION['id_utilisateur'] = $id_utilisateur;
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Bienvenue, " . $_SESSION['prenom'] . " " . $_SESSION['nom'];
             header('location: index.php');

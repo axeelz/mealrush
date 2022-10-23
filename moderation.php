@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Page réservée aux restaurateurs
-if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION['role'] == 'utilisateur') {
+// Page réservée aux admins
+if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION['role'] != 'admin') {
     header("location: index.php");
     exit;
 }
@@ -17,7 +17,7 @@ if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="dist/output.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    <title>Restaurateurs - MealRush</title>
+    <title>Modération - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 
