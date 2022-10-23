@@ -1,8 +1,4 @@
 <?php
-// On préserve la session que si elle n'est pas déjà crée (dans index par exemple)
-if (!isset($_SESSION))
-    session_start();
-
 if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     $isConnecte = true;
 } else {
@@ -73,7 +69,7 @@ if (!$_SESSION["item_panier"]) {
             </div>
         <?php else : ?>
             <ul class="menu menu-horizontal p-0">
-                <li><a class="btn bg-white hover:text-white border-none" href="connexion.php">Se connecter</a></li>
+                <li><a class="btn btn-ghost" href="connexion.php">Se connecter</a></li>
             </ul>
         <?php endif; ?>
     </div>

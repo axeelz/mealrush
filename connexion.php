@@ -33,6 +33,7 @@ if (isset($_POST['login'])) {
 
         $prenom = $row['prenom'];
         $nom = $row['nom'];
+        $role = $row['role'];
 
         // Puis on vérifie que le mot de passe hashé contenu dans la base de données
         // correspond bien avec ce que l'utilisateur a entré
@@ -42,6 +43,7 @@ if (isset($_POST['login'])) {
             $_SESSION['email'] = $email;
             $_SESSION['prenom'] = $prenom;
             $_SESSION['nom'] = $nom;
+            $_SESSION['role'] = $role;
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Bienvenue, " . $_SESSION['prenom'] . " " . $_SESSION['nom'];
             header('location: index.php');
@@ -74,7 +76,7 @@ if (isset($_POST['login'])) {
         <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3">
             <img src="img/logo-blanc.png" alt="" class="w-64 mx-auto">
             <div class="divider"></div>
-            <h1 class="text-xl font-bold text-stale-900 md:text-2xl mb-5">
+            <h1 class="text-xl font-bold md:text-2xl mb-5">
                 Connectez vous à votre compte
             </h1>
             <form class="form-control w-full max-w-xs md:max-w-md" method="post">

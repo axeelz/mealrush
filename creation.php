@@ -15,7 +15,7 @@ try {
     $query = "SELECT * FROM tags";
     $result = mysqli_query($conn, $query);
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        array_push($tags, $row["nom_tag"]);
+        array_push($tags, $row["nom_tag"] . ":" . $row["id"]);
     }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
@@ -55,8 +55,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             // On récupère l'id utilisateur de l'utilisateur qu'on vient d'ajouter
             // car on en a besoin pour lier un restaurateur à un utilisateur
             $last_id = mysqli_insert_id($conn);
-            if ($role == 'utilisateur')
-                array_push($succes, "Compte crée");
+            // Compté crée !
         } else {
             array_push($erreurs, mysqli_error($conn));
             break;
@@ -77,7 +76,8 @@ if (isset($_POST['signup']) && isset($conn)) {
             // Si tout est bon, on crée un restaurant
             $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$last_id')";
             if (mysqli_query($conn, $query)) {
-                array_push($succes, "Compte et restaurant crées");
+                $last_id = mysqli_insert_id($conn);
+                // Restaurant crée !
             } else {
                 array_push($erreurs, mysqli_error($conn));
                 break;
@@ -85,13 +85,45 @@ if (isset($_POST['signup']) && isset($conn)) {
 
             // Ajout des tags correspondants aux restos dans la BDD
             $checkboxes = $_POST['tags'];
+
+            // Pour chaque tag coché
             foreach ($checkboxes as $c) {
-                // inserer les tags
-                array_push($succes, $c);
+                $tag_nom = explode(":", $c)[0];
+                $tag_id = explode(":", $c)[1];
+                $result = mysqli_query($conn, "SELECT * FROM `tags` WHERE nom_tag='$tag_nom' AND id='$tag_id'");
+                $count = mysqli_num_rows($result);
+
+                if ($count == 1) {
+                    $query = "INSERT INTO `restaurants_tags` (`id_restaurant`, `id_tag`) VALUES ('$last_id', '$tag_id')";
+                    if (!mysqli_query($conn, $query)) {
+                        array_push($erreurs, "Impossible d'ajouter les tags");
+                        break;
+                    }
+                } else {
+                    array_push($erreurs, $tag_nom . " n'est pas un tag reconnu");
+                    break;
+                }
             }
         }
 
         FermerConnexion($conn);
+
+        // On définit les variables de session et on redirige vers une page
+        $_SESSION['connecte'] = true;
+        $_SESSION['email'] = $email;
+        $_SESSION['prenom'] = $prenom;
+        $_SESSION['nom'] = $nom;
+        $_SESSION['role'] = $role;
+
+        if ($role == 'restaurateur') {
+            $_SESSION['successMessage'] = "Compte et restaurant crées";
+            header('location: restaurateur.php');
+            exit();
+        } else {
+            $_SESSION['successMessage'] = "Compte crée";
+            header('location: compte.php');
+        }
+        exit();
     } while (0);
 } else {
 }
@@ -118,7 +150,7 @@ if (isset($_POST['signup']) && isset($conn)) {
         <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3">
             <img src="img/logo-blanc.png" alt="" class="w-64 mx-auto">
             <div class="divider"></div>
-            <h1 class="text-xl font-bold text-stale-900 md:text-2xl mb-5">
+            <h1 class="text-xl font-bold md:text-2xl mb-5">
                 Créer un compte
             </h1>
             <form class="form-control w-full max-w-xs md:max-w-md" method="post">
@@ -173,20 +205,17 @@ if (isset($_POST['signup']) && isset($conn)) {
                 </div>
                 <!-- Formulaire restaurateur -->
                 <div id="formulaire_restaurateur" class="hidden">
-                    <div class="grid grid-cols-2 gap-4 mb-5">
-                        <div id="row-1">
-                            <label for="nom_resto" class="label">
-                                <span class="label-text">Nom du restaurant</span>
-                            </label>
-                            <input type="text" name="nom_resto" id="nom_resto" placeholder="McDonald's" class="input input-bordered bg-slate-100 w-full" />
-                        </div>
-                        <div id="row-2">
-                            <label for="image_resto" class="label">
-                                <span class="label-text">URL d'une image du restaurant</span>
-                            </label>
-                            <input type="url" name="image_resto" id="image_resto" placeholder="https://test.png" class="input input-bordered bg-slate-100 w-full" />
-                        </div>
-                    </div>
+                    <h2 class="text-xl font-bold md:text-2xl my-5">
+                        Informations sur le restaurant
+                    </h2>
+                    <label for="nom_resto" class="label">
+                        <span class="label-text">Nom du restaurant</span>
+                    </label>
+                    <input type="text" name="nom_resto" id="nom_resto" placeholder="McDonald's" class="input input-bordered bg-slate-100 w-full mb-5" />
+                    <label for="image_resto" class="label">
+                        <span class="label-text">URL d'une image du restaurant</span>
+                    </label>
+                    <input type="url" name="image_resto" id="image_resto" placeholder="https://test.png" class="input input-bordered bg-slate-100 w-full mb-5" />
                     <div tabindex="0" class="collapse collapse-arrow border border-base-300 rounded-box">
                         <input type="checkbox" />
                         <div class="collapse-title">
@@ -196,19 +225,19 @@ if (isset($_POST['signup']) && isset($conn)) {
                             <div class="form-control">
                                 <?php foreach ($tags as $t) : ?>
                                     <label class="label cursor-pointer">
-                                        <span class="label-text"><?php echo $t ?></span>
+                                        <span class="label-text"><?php echo explode(":", $t)[0]; ?></span>
                                         <input type="checkbox" class="checkbox" name="tags[]" value="<?php echo $t ?>" />
                                     </label>
                                 <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
-                    <div class="alert shadow-lg mt-5">
+                    <div class="alert alert-warning mt-5">
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span>Il y aura une vérification</span>
+                            <span>Il y aura une vérification de votre restaurant avant publication</span>
                         </div>
                     </div>
                 </div>
