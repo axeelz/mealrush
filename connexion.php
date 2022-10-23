@@ -35,10 +35,12 @@ if (isset($_POST['login'])) {
         $nom = $row['nom'];
         $role = $row['role'];
         $id_utilisateur = $row['id'];
+        $creation = $row['creation'];
 
         // Puis on vérifie que le mot de passe hashé contenu dans la base de données
         // correspond bien avec ce que l'utilisateur a entré
         if (password_verify($mdp, $mdpBDD)) {
+            FermerConnexion($conn);
             // On définit les variables de session et on redirige vers la page d'accueil
             $_SESSION['connecte'] = true;
             $_SESSION['email'] = $email;
@@ -46,6 +48,7 @@ if (isset($_POST['login'])) {
             $_SESSION['nom'] = $nom;
             $_SESSION['role'] = $role;
             $_SESSION['id_utilisateur'] = $id_utilisateur;
+            $_SESSION['creation'] = $creation;
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Bienvenue, " . $_SESSION['prenom'] . " " . $_SESSION['nom'];
             header('location: index.php');

@@ -60,6 +60,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             // On récupère l'id utilisateur de l'utilisateur qu'on vient d'ajouter
             // car on en a besoin pour lier un restaurateur à un utilisateur
             $id_utilisateur = mysqli_insert_id($conn);
+            $creation = date("Y-m-d H:i:s"); // date de création
             // Compté crée !
         } else {
             array_push($erreurs, mysqli_error($conn));
@@ -72,7 +73,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             $nom_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom_resto']));
             $image_resto = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_resto']));
 
-            // Si l'insertion du compte utilisateur a bien fonctionné seulement
+            // Si l'insertion du compte utilisateur a pas fonctionné, on stop
             if (!isset($id_utilisateur)) {
                 array_push($erreurs, "Erreur lors de la création de l'utilisateur, impossible de créer le restaurant");
                 break;
@@ -120,6 +121,7 @@ if (isset($_POST['signup']) && isset($conn)) {
         $_SESSION['nom'] = $nom;
         $_SESSION['role'] = $role;
         $_SESSION['id_utilisateur'] = $id_utilisateur;
+        $_SESSION['creation'] = $creation;
 
         if ($role == 'restaurateur') {
             $_SESSION['id_restaurant'] = $id_restaurant;

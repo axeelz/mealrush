@@ -1,5 +1,21 @@
 <?php
 session_start();
+
+include 'ouvrirconnexion.php';
+try {
+    // On se connecte à la BDD
+    $conn = OuvrirConnexion();
+
+    // On récupère les tags des resto pour les afficher
+    $tags = array();
+    $query = "SELECT * FROM tags";
+    $result = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        array_push($tags, $row["nom_tag"] . ":" . $row["id"]);
+    }
+} catch (\Throwable $th) {
+    array_push($erreurs, $th->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +50,9 @@ session_start();
             </div>
         </div>
     </div>
+
+    <!-- Livrer a ...
+    Lister les catégories -->
 
     <?php include('footer.php'); ?>
 
