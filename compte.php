@@ -27,7 +27,7 @@ try {
         $result = mysqli_query($conn, $query);
         $count = mysqli_num_rows($result);
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            array_push($adresses, $row["numero"] . ", rue " . $row["rue"] . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+            array_push($adresses, $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
         }
     }
 
@@ -53,7 +53,8 @@ if (isset($_POST['setadress']) && isset($conn)) {
             break;
         }
 
-        // Insertion d'un nouveau compte
+        // Insertion d'une nouvelle adresse
+        // Il faudrait vérifier si l'adresse existe pas déjà et récuperer simplement son id ?
         $query = "INSERT INTO `adresses` (`rue`, `numero`, `ville`, `code_postal`, `pays`) VALUES ('$rue', '$numero', '$ville', '$code_postal', '$pays')";
         if (mysqli_query($conn, $query)) {
             $id_adresse = mysqli_insert_id($conn);
@@ -130,7 +131,7 @@ if (isset($_POST['setadress']) && isset($conn)) {
                             <label for="rue" class="label">
                                 <span class="label-text">Rue</span>
                             </label>
-                            <input type="text" name="rue" id="rue" placeholder="Rivoli" class="input input-bordered bg-slate-100 w-full" required />
+                            <input type="text" name="rue" id="rue" placeholder="rue de Rivoli" class="input input-bordered bg-slate-100 w-full" required />
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 mb-5">
@@ -475,7 +476,12 @@ if (isset($_POST['setadress']) && isset($conn)) {
                             </div>
                             <input type="text" value="<?php echo $_SESSION['email'] ?>" class="text-center input input-bordered bg-slate-100 w-full" />
                             <div class="card-actions">
-                                <button class="btn btn-neutral mt-5">Enregistrer</button>
+                                <button class="btn btn-neutral mt-5 gap-2"">
+                                    Enregistrer
+                                    <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </form>
                     </div>

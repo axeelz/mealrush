@@ -64,6 +64,7 @@ if (!$_SESSION["item_panier"]) {
                             Mon compte
                         </a>
                     </li>
+                    <li><a href="">Mes commandes</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>
                 </ul>
             </div>
