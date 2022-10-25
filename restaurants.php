@@ -6,7 +6,7 @@ try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
 
-    $id_restaurant = $_GET['id'];
+    $id_restaurant = (int)$_GET['id'];
 
     // On récupère les infos sur le restaurant en question
     $query = "SELECT * FROM restaurants WHERE id = '$id_restaurant'";
