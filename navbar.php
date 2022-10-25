@@ -5,6 +5,12 @@ if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     $isConnecte = false;
 }
 
+if (isset($_SESSION['role']) && $_SESSION['role'] == 'restaurateur') {
+    $isRestaurateur = true;
+} else {
+    $isRestaurateur = false;
+}
+
 if (!$_SESSION["item_panier"]) {
     $nb_items = 0;
     $prix_total = 0;
@@ -64,6 +70,9 @@ if (!$_SESSION["item_panier"]) {
                             Mon compte
                         </a>
                     </li>
+                    <?php if ($isConnecte) : ?>
+                        <li><a href="restaurateur.php">Gestion restaurants</a></li>
+                    <?php endif; ?>
                     <li><a href="">Mes commandes</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>
                 </ul>

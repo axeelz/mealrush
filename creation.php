@@ -15,7 +15,10 @@ try {
     $query = "SELECT * FROM tags";
     $result = mysqli_query($conn, $query);
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        array_push($tags, $row["nom_tag"] . ":" . $row["id"]);
+        array_push($tags, array(
+            'nom_tag' => $row["nom_tag"],
+            'id_tag' => $row["id"]
+        ));
     }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
@@ -234,8 +237,8 @@ if (isset($_POST['signup']) && isset($conn)) {
                             <div class="form-control">
                                 <?php foreach ($tags as $t) : ?>
                                     <label class="label cursor-pointer">
-                                        <span class="label-text"><?php echo explode(":", $t)[0]; ?></span>
-                                        <input type="checkbox" class="checkbox" name="tags[]" value="<?php echo $t ?>" />
+                                        <span class="label-text"><?php echo $t['nom_tag']; ?></span>
+                                        <input type="checkbox" class="checkbox" name="tags[]" value="<?php echo $t['nom_tag'] . ":" . $t['id_tag'] ?>" />
                                     </label>
                                 <?php endforeach; ?>
                             </div>

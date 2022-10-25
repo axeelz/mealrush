@@ -494,12 +494,12 @@ if (isset($_POST['setadress']) && isset($conn)) {
     <?php include('footer.php'); ?>
 
     <div class="modal" id="ouvrir-adresses">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg mb-2">Adresses enregistrées</h3>
+        <div class="modal-box text-center">
+            <h3 class="font-bold text-lg mb-5">Adresses enregistrées</h3>
             <?php foreach ($adresses as $a) : ?>
                 <button class="btn btn-ghost gap-2">
                     <?php echo $a; ?>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M 18 2 L 15.585938 4.4140625 L 19.585938 8.4140625 L 22 6 L 18 2 z M 14.076172 5.9238281 L 3 17 L 3 21 L 7 21 L 18.076172 9.9238281 L 14.076172 5.9238281 z" />
                     </svg>
                 </button>
@@ -508,7 +508,12 @@ if (isset($_POST['setadress']) && isset($conn)) {
                 <form method="post" action="compte.php">
                     <button class="btn btn-ghost" name="addadress">Ajouter une adresse</button>
                 </form>
-                <a href="#" class="btn">Terminé</a>
+                <!-- Si on vient ici depuis la page d'accueil, on renvoie vers cette dernière au lieu de rester sur la page de compte -->
+                <?php if (empty($_GET['selection'])) : ?>
+                    <a href="#" class="btn">Terminé</a>
+                <?php else : ?>
+                    <a href="index.php#adresse" class="btn">Terminé</a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
