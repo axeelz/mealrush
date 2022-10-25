@@ -70,7 +70,7 @@ if (!$_SESSION["item_panier"]) {
                             Mon compte
                         </a>
                     </li>
-                    <?php if ($isConnecte) : ?>
+                    <?php if ($isRestaurateur) : ?>
                         <li><a href="restaurateur.php">Gestion restaurants</a></li>
                     <?php endif; ?>
                     <li><a href="">Mes commandes</a></li>
