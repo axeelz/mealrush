@@ -79,7 +79,7 @@ if (isset($_POST['masquer']) && isset($conn)) {
         if (mysqli_query($conn, $query)) {
             FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
-            $_SESSION['successMessage'] = "Restaurant bloqué";
+            $_SESSION['successMessage'] = "Restaurant masqué";
             header('location: ' . $_SERVER['PHP_SELF']);
             exit();
         } else {
