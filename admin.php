@@ -47,7 +47,8 @@ try {
             'nom' => $row['nom'],
             'email' => $row['email'],
             'role' => $row['role'],
-            'creation' => new DateTime($row['creation'])
+            'creation' => new DateTime($row['creation']),
+            'id' => $row['id']
         ));
     }
 } catch (\Throwable $th) {
@@ -88,6 +89,51 @@ if (isset($_POST['masquer']) && isset($conn)) {
             break;
         }
     } while (0);
+}
+
+// Après avoir cliqué sur supprimer
+if (isset($_POST['supprimer']) && isset($conn)) {
+    $id_restaurant_a_suppr = $_POST['supprimer'];
+    do {
+        $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_suppr'";
+        $query2 = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
+        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
+            FermerConnexion($conn);
+            // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+            $_SESSION['successMessage'] = "Restaurant supprimé";
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+    } while (0);
+}
+
+// Après avoir cliqué sur supprimer user
+if (isset($_POST['supprimer_user']) && isset($conn)) {
+    $id_user_a_suppr = $_POST['supprimer_user'];
+    try {
+        do {
+            $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_user_a_suppr'";
+            $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_user_a_suppr'";
+            $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_user_a_suppr'";
+            $query4 = "DELETE FROM utilisateurs WHERE id='$id_user_a_suppr'";
+
+            if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
+                FermerConnexion($conn);
+                // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+                $_SESSION['successMessage'] = "Utilisateur et ses restaurants supprimés";
+                header('location: ' . $_SERVER['PHP_SELF']);
+                exit();
+            } else {
+                array_push($erreurs, mysqli_error($conn));
+                break;
+            }
+        } while (0);
+    } catch (\Throwable $th) {
+        array_push($erreurs, $th);
+    }
 }
 ?>
 
