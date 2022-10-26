@@ -104,36 +104,7 @@ try {
             <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Tous les restaurants</h2>
             <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                 <?php foreach ($restos as $r) : ?>
-                    <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-                        <figure class="h-44 overflow-hidden">
-                            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
-                        </figure>
-                        <div class="card-body">
-                            <h2 class="card-title">
-                                <?php echo $r['nom']; ?>
-                            </h2>
-                            <div class="card-actions justify-start">
-                                <?php if (empty($r['tags'])) : ?>
-                                    <div class="badge badge-ghost">Pas de tag</div>
-                                <?php else : ?>
-                                    <?php foreach ($r['tags'] as $t) : ?>
-                                        <div class="badge badge-ghost"><?php echo $t; ?></div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                            <p>
-                                Livraison en
-                                <span class="badge bg-green">
-                                    <script>
-                                        document.write(Math.round(Math.random() * (30 - 5) + 5) + " min");
-                                    </script>
-                                </span>
-                            </p>
-                            <div class="card-actions justify-end">
-                                <a href="restaurants.php?id=<?php echo $r['id']; ?>" class="btn bg-blue text-black border-none hover:text-white mt-2">Voir les plats</a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include('restocard.php'); ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -160,36 +131,7 @@ try {
                 <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if (in_array($tnv, $r['tags'])) : ?>
-                            <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-                                <figure class="h-44 overflow-hidden">
-                                    <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
-                                </figure>
-                                <div class="card-body">
-                                    <h2 class="card-title">
-                                        <?php echo $r['nom']; ?>
-                                    </h2>
-                                    <div class="card-actions justify-start">
-                                        <?php if (empty($r['tags'])) : ?>
-                                            <div class="badge badge-ghost">Pas de tag</div>
-                                        <?php else : ?>
-                                            <?php foreach ($r['tags'] as $t) : ?>
-                                                <div class="badge badge-ghost"><?php echo $t; ?></div>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </div>
-                                    <p>
-                                        Livraison en
-                                        <span class="badge bg-green">
-                                            <script>
-                                                document.write(Math.round(Math.random() * (30 - 5) + 5) + " min");
-                                            </script>
-                                        </span>
-                                    </p>
-                                    <div class="card-actions justify-end">
-                                        <a href="restaurants.php?id=<?php echo $r['id']; ?>" class="btn bg-blue text-black border-none hover:text-white mt-2">Voir les plats</a>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php include('restocard.php'); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
@@ -224,36 +166,7 @@ try {
                 <?php foreach ($restos as $r) : ?>
                     <?php if (in_array($nom_tag_selectionne, $r['tags'])) : ?>
                         <?php $auMoinsUnResultat = true; ?>
-                        <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-                            <figure class="h-44 overflow-hidden">
-                                <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
-                            </figure>
-                            <div class="card-body">
-                                <h2 class="card-title">
-                                    <?php echo $r['nom']; ?>
-                                </h2>
-                                <div class="card-actions justify-start">
-                                    <?php if (empty($r['tags'])) : ?>
-                                        <div class="badge badge-ghost">Pas de tag</div>
-                                    <?php else : ?>
-                                        <?php foreach ($r['tags'] as $t) : ?>
-                                            <div class="badge badge-ghost"><?php echo $t; ?></div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </div>
-                                <p>
-                                    Livraison en
-                                    <span class="badge bg-green">
-                                        <script>
-                                            document.write(Math.round(Math.random() * (30 - 5) + 5) + " min");
-                                        </script>
-                                    </span>
-                                </p>
-                                <div class="card-actions justify-end">
-                                    <a href="restaurants.php?id=<?php echo $r['id']; ?>" class="btn bg-blue text-black border-none hover:text-white mt-2">Voir les plats</a>
-                                </div>
-                            </div>
-                        </div>
+                        <?php include('restocard.php'); ?>
                     <?php endif; ?>
                 <?php endforeach; ?>
                 <?php if (!isset($auMoinsUnResultat)) : ?>

@@ -80,32 +80,7 @@ try {
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'false') : ?>
                     <?php $auMoinsUnResultat = true; ?>
-                    <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-                        <figure class="h-44 overflow-hidden">
-                            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
-                        </figure>
-                        <div class="card-body">
-                            <h2 class="card-title">
-                                <?php echo $r['nom']; ?>
-                            </h2>
-                            <div class="card-actions justify-start">
-                                <?php if (empty($r['tags'])) : ?>
-                                    <div class="badge badge-ghost">Pas de tag</div>
-                                <?php else : ?>
-                                    <?php foreach ($r['tags'] as $t) : ?>
-                                        <div class="badge badge-ghost"><?php echo $t; ?></div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                            <p>Par <?php echo $r['prenom_u'] . " " . $r['nom_u'] . " (" . $r['email_u'] . ")"; ?></p>
-                            <div class="card-actions justify-end">
-                                <form method="post">
-                                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
-                                    <button name="approuver" value="<?php echo $r['id']; ?>" class="btn btn-success mt-2">Approuver</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include('restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
@@ -122,31 +97,7 @@ try {
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'true') : ?>
                     <?php $auMoinsUnResultat = true; ?>
-                    <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-                        <figure class="h-44 overflow-hidden">
-                            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
-                        </figure>
-                        <div class="card-body">
-                            <h2 class="card-title">
-                                <?php echo $r['nom']; ?>
-                            </h2>
-                            <div class="card-actions justify-start">
-                                <?php if (empty($r['tags'])) : ?>
-                                    <div class="badge badge-ghost">Pas de tag</div>
-                                <?php else : ?>
-                                    <?php foreach ($r['tags'] as $t) : ?>
-                                        <div class="badge badge-ghost"><?php echo $t; ?></div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                            <p>Par <?php echo $r['prenom_u'] . " " . $r['nom_u'] . " (" . $r['email_u'] . ")"; ?></p>
-                            <div class="card-actions justify-end">
-                                <form method="post">
-                                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include('restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
