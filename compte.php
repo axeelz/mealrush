@@ -528,13 +528,6 @@ if (isset($_POST['setadress']) && isset($conn)) {
         </div>
     </div>
 
-    <script>
-        // Empêche de resoumettre le formulaire quand on refresh la page
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
-        }
-    </script>
-
 </body>
 
 </html>

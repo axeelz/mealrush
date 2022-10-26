@@ -58,7 +58,18 @@
     setTimeout(() => {
         const alert = document.getElementsByClassName('temp');
         for (let notif of alert) {
-            notif.style.display = 'none';
+            notif.style.opacity = 0;
+            notif.style.transform = 'scale(0)';
+            // Animation disparition
+            window.setTimeout(function() {
+                notif.style.display = 'none';
+            }, 600);
         }
     }, 4000);
+</script>
+<script>
+    // Empêche de resoumettre le formulaire quand on refresh la page
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
 </script>

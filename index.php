@@ -103,34 +103,43 @@ try {
         <div class="p-7 lg:mx-16" id="restos-container">
             <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Tous les restaurants</h2>
             <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
-                <?php foreach ($restos as $r) : ?>
-                    <?php include('restocard.php'); ?>
-                <?php endforeach; ?>
+                <?php if (empty($restos)) : ?>
+                    <div class="alert shadow-lg">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Nous n'avons aucun restaurant à afficher pour le moment</span>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <?php foreach ($restos as $r) : ?>
+                        <?php include('restocard.php'); ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 
         <?php
-        try {
-            $tags_non_vides = array();
-            $query = "SELECT DISTINCT id_tag FROM restaurants_tags JOIN restaurants ON restaurants_tags.id_restaurant = restaurants.id WHERE restaurants.approuve = 'true'";
-            $result = mysqli_query($conn, $query);
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                foreach ($tags as $t) {
-                    if ($row['id_tag'] == $t['id_tag']) {
-                        array_push($tags_non_vides, $t['nom_tag']);
-                    }
+        $tags_non_vides = array();
+        $query = "SELECT DISTINCT id_tag FROM restaurants_tags JOIN restaurants ON restaurants_tags.id_restaurant = restaurants.id WHERE restaurants.approuve = 'true'";
+        $result = mysqli_query($conn, $query);
+        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            foreach ($tags as $t) {
+                if ($row['id_tag'] == $t['id_tag']) {
+                    array_push($tags_non_vides, $t['nom_tag']);
                 }
             }
-        } catch (\Throwable $th) {
-            array_push($erreurs, $th->getMessage());
         }
         ?>
+
         <?php foreach ($tags_non_vides as $tnv) : ?>
             <div class="p-7 lg:mx-16">
                 <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
                 <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if (in_array($tnv, $r['tags'])) : ?>
+                            <?php $auMoinsUnResto = true; ?>
                             <?php include('restocard.php'); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>

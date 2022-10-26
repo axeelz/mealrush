@@ -35,6 +35,14 @@ try {
             'tags' => $tags_du_resto
         ));
     }
+
+    $nb_approuves = count(array_filter($restos, function ($resto) {
+        return $resto["approuve"] == "true";
+    }));
+
+    $nb_en_attente = count(array_filter($restos, function ($resto) {
+        return $resto["approuve"] == "false";
+    }));
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
 }
@@ -57,6 +65,82 @@ try {
 
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
+
+    <?php if ($nb_approuves == 0 && $nb_en_attente == 1) : ?>
+
+        <div class="hero min-h-screen" style="background-image: url(<?php echo $restos[0]['image']; ?>);">
+            <div class="hero-overlay bg-opacity-80"></div>
+            <div class=" hero-content text-center text-white">
+                <div class="max-w-md">
+                    <h1 class="text-5xl font-bold">En attente de validation...</h1>
+                    <p class="py-6">Votre restaurant <b><?php echo $restos[0]['nom']; ?></b> est en attente de validation par un de nos modérateurs. Vous pourrez le gérer ici lorsque nous aurons vérifié les informations.</p>
+                    <button class="btn bg-white text-black hover:text-white" name="supprimer">Annuler la demande</button>
+                </div>
+            </div>
+        </div>
+
+    <?php else : ?>
+
+        <?php if ($nb_approuves == 0 && $nb_en_attente == 0) : ?>
+
+            <div class="hero min-h-screen" style="background-image: url(https://i.pinimg.com/originals/d3/6d/46/d36d462db827833805497d9ea78a1343.jpg);">
+                <div class="hero-overlay bg-opacity-80"></div>
+                <div class=" hero-content text-center text-white">
+                    <div class="max-w-md">
+                        <h1 class="text-5xl font-bold">Aucun restaurant</h1>
+                        <p class="py-6">Vous n'avez aucun restaurant</p>
+                        <button class="btn bg-white text-black hover:text-white" name="ajouter">Ajouter un restaurant</button>
+                    </div>
+                </div>
+            </div>
+
+        <?php else : ?>
+
+            <div class="hero bg-green min-h-[7rem] text-center">
+                <div class="hero-content">
+                    <div class="max-w-md">
+                        <h1 class="text-5xl font-bold text-white">Bonjour, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-7 lg:mx-16">
+                <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants approuvés</h2>
+                <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+                    <?php foreach ($restos as $r) : ?>
+                        <?php if ($r['approuve'] == 'true') : ?>
+                            <?php $auMoinsUnRestoApprouve = true; ?>
+                            <?php include('restocard.php'); ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (!isset($auMoinsUnRestoApprouve)) : ?>
+                    <div class="alert shadow-lg alert-error md:w-1/2 mx-auto">
+                        Aucun restaurant approuvé
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="p-7 lg:mx-16">
+                <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants en attente d'approbation</h2>
+                <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+                    <?php foreach ($restos as $r) : ?>
+                        <?php if ($r['approuve'] == 'false') : ?>
+                            <?php $auMoinsUnRestoEnAttente = true; ?>
+                            <?php include('restocard.php'); ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (!isset($auMoinsUnRestoEnAttente)) : ?>
+                    <div class="alert shadow-lg alert-success md:w-1/2 mx-auto">
+                        Tous vos restaurants sont approuvés !
+                    </div>
+                <?php endif; ?>
+            </div>
+
+        <?php endif; ?>
+
+    <?php endif; ?>
 
     <?php include('footer.php'); ?>
 

@@ -137,7 +137,6 @@ if (isset($_POST['signup']) && isset($conn)) {
         }
         exit();
     } while (0);
-} else {
 }
 ?>
 

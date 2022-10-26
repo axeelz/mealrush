@@ -12,3 +12,8 @@ html {
 li a:active {
     background-color: none;
 }
+.alert.temp {
+    opacity: 100;
+    transform: scale(1);
+    transition: 0.5s ease opacity, 0.5s ease transform;
+}

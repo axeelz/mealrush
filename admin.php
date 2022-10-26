@@ -36,8 +36,57 @@ try {
             'tags' => $tags_du_resto
         ));
     }
+
+    // On récupère les utilisateurs
+    $users = array();
+    $query = "SELECT * FROM utilisateurs";
+    $result = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        array_push($users, array(
+            'prenom' => $row['prenom'],
+            'nom' => $row['nom'],
+            'email' => $row['email'],
+            'role' => $row['role']
+        ));
+    }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
+}
+
+// Après avoir cliqué sur approuver
+if (isset($_POST['approuver']) && isset($conn)) {
+    $id_restaurant_a_modif = $_POST['approuver'];
+    do {
+        $query = "UPDATE restaurants SET approuve = 'true' WHERE id='$id_restaurant_a_modif'";
+        if (mysqli_query($conn, $query)) {
+            FermerConnexion($conn);
+            // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+            $_SESSION['successMessage'] = "Restaurant approuvé";
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+    } while (0);
+}
+
+// Après avoir cliqué sur masquer
+if (isset($_POST['masquer']) && isset($conn)) {
+    $id_restaurant_a_modif = $_POST['masquer'];
+    do {
+        $query = "UPDATE restaurants SET approuve = 'false' WHERE id='$id_restaurant_a_modif'";
+        if (mysqli_query($conn, $query)) {
+            FermerConnexion($conn);
+            // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+            $_SESSION['successMessage'] = "Restaurant bloqué";
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+    } while (0);
 }
 ?>
 
@@ -108,14 +157,31 @@ try {
         <?php endif; ?>
     </div>
 
-    <?php include('footer.php'); ?>
+    <div class="p-7 lg:mx-16">
+        <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Utilisateurs</h2>
+        <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll">
+            <?php foreach ($users as $u) : ?>
+                <div class="card w-96 bg-base-100 shadow-md">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <?php echo $u['prenom'] . " " . $u['nom']; ?>
+                        </h2>
+                        <p><?php echo $u['email']; ?></p>
+                        <div class="card-actions justify-start">
+                            <div class="badge badge-outline"><?php echo $u['role']; ?></div>
+                        </div>
+                        <div class="card-actions justify-end">
+                            <form method="post">
+                                <button class="btn btn-error" name="supprimer_user" value="<?php echo $u['id']; ?>">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
 
-    <script>
-        // Empêche de resoumettre le formulaire quand on refresh la page
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
-        }
-    </script>
+    <?php include('footer.php'); ?>
 
 </body>
 
