@@ -46,7 +46,8 @@ try {
             'prenom' => $row['prenom'],
             'nom' => $row['nom'],
             'email' => $row['email'],
-            'role' => $row['role']
+            'role' => $row['role'],
+            'creation' => new DateTime($row['creation'])
         ));
     }
 } catch (\Throwable $th) {
@@ -116,8 +117,8 @@ if (isset($_POST['masquer']) && isset($conn)) {
         </div>
     </div>
 
-    <div class="bg-info rounded-box flex items-center p-4 justify-center shadow-lg w-fit mx-auto mt-5">
-        <div class="px-2">
+    <div class="bg-[#f2f2f2] rounded-box flex items-center p-4 justify-center shadow-lg w-fit mx-auto mt-5">
+        <div class="px-2 text-center">
             <h2 class="text-3xl font-extrabold"><?php echo count($restos); ?></h2>
             <p class="text-sm text-opacity-80">Restaurants</p>
         </div>
@@ -128,12 +129,12 @@ if (isset($_POST['masquer']) && isset($conn)) {
         <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'false') : ?>
-                    <?php $auMoinsUnResultat = true; ?>
+                    <?php $auMoinsUnRestoEnAttente = true; ?>
                     <?php include('restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
-        <?php if (!isset($auMoinsUnResultat)) : ?>
+        <?php if (!isset($auMoinsUnRestoEnAttente)) : ?>
             <div class="alert shadow-lg alert-success md:w-1/2 mx-auto">
                 Tous les restaurants sont approuvés !
             </div>
@@ -145,14 +146,19 @@ if (isset($_POST['masquer']) && isset($conn)) {
         <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'true') : ?>
-                    <?php $auMoinsUnResultat = true; ?>
+                    <?php $auMoinsUnRestoApprouve = true; ?>
                     <?php include('restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
-        <?php if (!isset($auMoinsUnResultat)) : ?>
-            <div class="alert shadow-lg alert-error md:w-1/2 mx-auto">
-                Aucun restaurant
+        <?php if (!isset($auMoinsUnRestoApprouve)) : ?>
+            <div class="alert shadow-lg md:w-1/2 mx-auto">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Aucun restaurant approuvé</span>
+                </div>
             </div>
         <?php endif; ?>
     </div>
@@ -166,7 +172,10 @@ if (isset($_POST['masquer']) && isset($conn)) {
                         <h2 class="card-title">
                             <?php echo $u['prenom'] . " " . $u['nom']; ?>
                         </h2>
-                        <p><?php echo $u['email']; ?></p>
+                        <p>
+                            <?php echo $u['email']; ?> <br />
+                            <?php echo $u['creation']->format('d/m/Y à H:i'); ?>
+                        </p>
                         <div class="card-actions justify-start">
                             <div class="badge badge-outline"><?php echo $u['role']; ?></div>
                         </div>

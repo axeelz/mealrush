@@ -46,8 +46,10 @@
                 <form method="post">
                     <?php if ($r['approuve'] == 'true') : ?>
                         <button name="modifier" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Modifier</button>
+                        <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
+                    <?php else : ?>
+                        <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Annuler</button>
                     <?php endif; ?>
-                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
                 </form>
             <?php else : ?>
                 <a href="restaurants.php?id=<?php echo $r['id']; ?>" class="btn bg-blue text-black border-none hover:text-white mt-2">Voir les plats</a>
