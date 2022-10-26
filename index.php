@@ -104,7 +104,7 @@ try {
             <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Tous les restaurants</h2>
             <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                 <?php foreach ($restos as $r) : ?>
-                    <div class="card shadow-md h-80 w-[310px] min-w-[310px] snap-center">
+                    <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
                         <figure class="h-44 overflow-hidden">
                             <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
                         </figure>
@@ -160,7 +160,7 @@ try {
                 <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if (in_array($tnv, $r['tags'])) : ?>
-                            <div class="card shadow-md h-80 w-[310px] min-w-[310px] snap-center">
+                            <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
                                 <figure class="h-44 overflow-hidden">
                                     <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
                                 </figure>
@@ -210,7 +210,7 @@ try {
         }
         ?>
 
-        <div class="hero bg-green h-28">
+        <div class="hero bg-green min-h-[7rem]">
             <div class="hero-content">
                 <div class="max-w-md">
                     <h1 class="text-5xl font-bold text-white"><?php echo $nom_tag_selectionne ?></h1>
@@ -223,10 +223,8 @@ try {
             <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                 <?php foreach ($restos as $r) : ?>
                     <?php if (in_array($nom_tag_selectionne, $r['tags'])) : ?>
-                        <?php
-                        $auMoinsUnResultat = true;
-                        ?>
-                        <div class="card shadow-md h-80 w-[310px] min-w-[310px] snap-center">
+                        <?php $auMoinsUnResultat = true; ?>
+                        <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
                             <figure class="h-44 overflow-hidden">
                                 <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
                             </figure>

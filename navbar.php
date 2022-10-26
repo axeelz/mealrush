@@ -5,7 +5,13 @@ if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     $isConnecte = false;
 }
 
-if (isset($_SESSION['role']) && $_SESSION['role'] == 'restaurateur') {
+if ($_SESSION['role'] == 'admin') {
+    $isAdmin = true;
+} else {
+    $isAdmin = false;
+}
+
+if ($_SESSION['role'] == 'restaurateur' || $isAdmin) {
     $isRestaurateur = true;
 } else {
     $isRestaurateur = false;
@@ -72,6 +78,9 @@ if (!$_SESSION["item_panier"]) {
                     </li>
                     <?php if ($isRestaurateur) : ?>
                         <li><a href="restaurateur.php">Gestion restaurants</a></li>
+                    <?php endif; ?>
+                    <?php if ($isAdmin) : ?>
+                        <li><a href="admin.php">Portail admin</a></li>
                     <?php endif; ?>
                     <li><a href="">Mes commandes</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>

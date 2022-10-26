@@ -27,7 +27,8 @@ if (isset($_POST['login'])) {
         $mdpBDD = $row['mdp'] ?? false;
 
         if ($mdpBDD == false) {
-            array_push($erreurs, "Aucun compte trouvé avec cette adresse e-mail");
+            // Aucun compte avec cette adresse e-mail
+            array_push($erreurs, "E-mail ou mot de passe invalide");
             break;
         }
 
@@ -54,7 +55,8 @@ if (isset($_POST['login'])) {
             header('location: index.php');
             exit();
         } else {
-            array_push($erreurs, "Mot de passe invalide");
+            // Mot de passe invalide (mais on le dit pas)
+            array_push($erreurs, "E-mail ou mot de passe invalide");
         }
     } while (0);
 }
