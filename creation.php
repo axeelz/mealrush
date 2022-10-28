@@ -82,6 +82,12 @@ if (isset($_POST['signup']) && isset($conn)) {
                 break;
             }
 
+            // Si un des champs est vide, on stop
+            if (empty($nom_resto) || empty($image_resto)) {
+                array_push($erreurs, "Un des champs requis est vide");
+                break;
+            }
+
             // Si tout est bon, on crée un restaurant
             $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur')";
             if (mysqli_query($conn, $query)) {
@@ -127,7 +133,6 @@ if (isset($_POST['signup']) && isset($conn)) {
         $_SESSION['creation'] = $creation;
 
         if ($role == 'restaurateur') {
-            $_SESSION['id_restaurant'] = $id_restaurant;
             $_SESSION['successMessage'] = "Compte et restaurant crées";
             header('location: restaurateur.php');
             exit();
@@ -230,7 +235,7 @@ if (isset($_POST['signup']) && isset($conn)) {
                     <div tabindex="0" class="collapse collapse-arrow border border-base-300 rounded-box">
                         <input type="checkbox" />
                         <div class="collapse-title">
-                            A quelles catégories correspond votre restaurant ?
+                            A quelles catégories correspond votre restaurant&nbsp;?
                         </div>
                         <div class="collapse-content">
                             <div class="form-control">
@@ -248,7 +253,7 @@ if (isset($_POST['signup']) && isset($conn)) {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span>Il y aura une vérification de votre restaurant avant publication</span>
+                            <span>Il y aura une vérification de votre restaurant avant sa publication</span>
                         </div>
                     </div>
                 </div>
@@ -259,9 +264,11 @@ if (isset($_POST['signup']) && isset($conn)) {
                         if (document.getElementById('restaurateur').checked) {
                             formulaire_restaurateur.style.display = 'block';
                             document.getElementById("nom_resto").required = true;
+                            document.getElementById("image_resto").required = true;
                         } else {
                             formulaire_restaurateur.style.display = 'none';
                             document.getElementById("nom_resto").required = false;
+                            document.getElementById("image_resto").required = false;
                         }
                     }
 

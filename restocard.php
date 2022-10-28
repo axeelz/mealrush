@@ -4,7 +4,7 @@
 
 <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
     <figure class="h-44 overflow-hidden">
-        <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" />
+        <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
     </figure>
     <div class="card-body">
         <h2 class="card-title">
@@ -36,11 +36,10 @@
                 <form method="post">
                     <?php if ($r['approuve'] == 'true') : ?>
                         <button name="masquer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Masquer</button>
-                    <?php endif; ?>
-                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
-                    <?php if ($r['approuve'] == 'false') : ?>
+                    <?php else : ?>
                         <button name="approuver" value="<?php echo $r['id']; ?>" class="btn btn-success mt-2">Approuver</button>
                     <?php endif; ?>
+                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
                 </form>
             <?php elseif (basename($_SERVER['PHP_SELF']) == "restaurateur.php") : ?>
                 <form method="post">

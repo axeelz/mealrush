@@ -1403,15 +1403,6 @@ html {
   border-color: hsl(var(--b1) / var(--tw-border-opacity));
 }
 
-.badge-secondary {
-  --tw-border-opacity: 1;
-  border-color: hsl(var(--s) / var(--tw-border-opacity));
-  --tw-bg-opacity: 1;
-  background-color: hsl(var(--s) / var(--tw-bg-opacity));
-  --tw-text-opacity: 1;
-  color: hsl(var(--sc) / var(--tw-text-opacity));
-}
-
 .badge-ghost {
   --tw-border-opacity: 1;
   border-color: hsl(var(--b2, var(--b1)) / var(--tw-border-opacity));
@@ -2052,6 +2043,13 @@ body[dir="rtl"] .checkbox:checked,
 .label-text {
   font-size: 0.875rem;
   line-height: 1.25rem;
+  --tw-text-opacity: 1;
+  color: hsl(var(--bc) / var(--tw-text-opacity));
+}
+
+.label-text-alt {
+  font-size: 0.75rem;
+  line-height: 1rem;
   --tw-text-opacity: 1;
   color: hsl(var(--bc) / var(--tw-text-opacity));
 }
@@ -2772,6 +2770,10 @@ body[dir="rtl"] .checkbox:checked,
   top: 100vh;
 }
 
+.z-10 {
+  z-index: 10;
+}
+
 .m-5 {
   margin: 1.25rem;
 }
@@ -2803,10 +2805,6 @@ body[dir="rtl"] .checkbox:checked,
   margin-left: 0.25rem;
 }
 
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -2831,6 +2829,14 @@ body[dir="rtl"] .checkbox:checked,
   margin-top: 1rem;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
 .block {
   display: block;
 }
@@ -2847,14 +2853,6 @@ body[dir="rtl"] .checkbox:checked,
   display: none;
 }
 
-.h-96 {
-  height: 24rem;
-}
-
-.h-44 {
-  height: 11rem;
-}
-
 .h-6 {
   height: 1.5rem;
 }
@@ -2865,6 +2863,30 @@ body[dir="rtl"] .checkbox:checked,
 
 .h-\[250px\] {
   height: 250px;
+}
+
+.h-96 {
+  height: 24rem;
+}
+
+.h-44 {
+  height: 11rem;
+}
+
+.max-h-3 {
+  max-height: 0.75rem;
+}
+
+.max-h-40 {
+  max-height: 10rem;
+}
+
+.max-h-52 {
+  max-height: 13rem;
+}
+
+.max-h-56 {
+  max-height: 14rem;
 }
 
 .min-h-screen {
@@ -2880,13 +2902,25 @@ body[dir="rtl"] .checkbox:checked,
   min-height: fit-content;
 }
 
+.min-h-\[9rem\] {
+  min-height: 9rem;
+}
+
+.min-h-\[12rem\] {
+  min-height: 12rem;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
 }
 
-.w-\[310px\] {
-  width: 310px;
+.w-6 {
+  width: 1.5rem;
+}
+
+.w-96 {
+  width: 24rem;
 }
 
 .w-64 {
@@ -2899,10 +2933,6 @@ body[dir="rtl"] .checkbox:checked,
 
 .w-24 {
   width: 6rem;
-}
-
-.w-6 {
-  width: 1.5rem;
 }
 
 .w-5 {
@@ -2929,16 +2959,16 @@ body[dir="rtl"] .checkbox:checked,
   width: auto;
 }
 
-.w-96 {
-  width: 24rem;
-}
-
-.min-w-\[310px\] {
-  min-width: 310px;
+.w-\[310px\] {
+  width: 310px;
 }
 
 .min-w-\[40\%\] {
   min-width: 40%;
+}
+
+.min-w-\[310px\] {
+  min-width: 310px;
 }
 
 .max-w-md {
@@ -2951,6 +2981,10 @@ body[dir="rtl"] .checkbox:checked,
 
 .max-w-full {
   max-width: 100%;
+}
+
+.max-w-sm {
+  max-width: 24rem;
 }
 
 .flex-1 {
@@ -3033,8 +3067,16 @@ body[dir="rtl"] .checkbox:checked,
   gap: 0.5rem;
 }
 
+.gap-6 {
+  gap: 1.5rem;
+}
+
 .overflow-hidden {
   overflow: hidden;
+}
+
+.overflow-scroll {
+  overflow: scroll;
 }
 
 .overflow-x-auto {
@@ -3084,9 +3126,9 @@ body[dir="rtl"] .checkbox:checked,
   background-color: rgb(50 75 79 / var(--tw-bg-opacity));
 }
 
-.bg-info {
+.bg-\[\#f2f2f2\] {
   --tw-bg-opacity: 1;
-  background-color: hsl(var(--in) / var(--tw-bg-opacity));
+  background-color: rgb(242 242 242 / var(--tw-bg-opacity));
 }
 
 .bg-base-100 {
@@ -3129,42 +3171,20 @@ body[dir="rtl"] .checkbox:checked,
   background-color: rgb(199 245 254 / var(--tw-bg-opacity));
 }
 
-.bg-gray {
-  --tw-bg-opacity: 1;
-  background-color: rgb(149 176 181 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#f2f2f2\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(242 242 242 / var(--tw-bg-opacity));
-}
-
 .bg-opacity-70 {
   --tw-bg-opacity: 0.7;
-}
-
-.bg-opacity-60 {
-  --tw-bg-opacity: 0.6;
 }
 
 .bg-opacity-80 {
   --tw-bg-opacity: 0.8;
 }
 
-.bg-opacity-90 {
-  --tw-bg-opacity: 0.9;
-}
-
-.bg-opacity-\[0\.85\] {
-  --tw-bg-opacity: 0.85;
+.stroke-info {
+  stroke: hsl(var(--in));
 }
 
 .stroke-current {
   stroke: currentColor;
-}
-
-.stroke-info {
-  stroke: hsl(var(--in));
 }
 
 .object-cover {
@@ -3402,9 +3422,17 @@ body[dir="rtl"] .checkbox:checked,
     margin: 2.5rem;
   }
 
+  .lg\:m-0 {
+    margin: 0px;
+  }
+
   .lg\:mx-16 {
     margin-left: 4rem;
     margin-right: 4rem;
+  }
+
+  .lg\:mt-10 {
+    margin-top: 2.5rem;
   }
 
   .lg\:w-1\/3 {
@@ -3413,5 +3441,13 @@ body[dir="rtl"] .checkbox:checked,
 
   .lg\:flex-row {
     flex-direction: row;
+  }
+
+  .lg\:flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .lg\:text-left {
+    text-align: left;
   }
 }

@@ -68,7 +68,7 @@ try {
 
     <div class="hero">
         <div class="hero-content flex-col lg:flex-row">
-            <img src="<?php echo $r['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" />
+            <img src="<?php echo $r['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
             <div>
                 <h1 class="text-5xl font-bold mb-2"><?php echo $r['nom']; ?></h1>
                 <div>

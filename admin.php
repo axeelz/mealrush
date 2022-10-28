@@ -57,8 +57,8 @@ try {
 
 // Après avoir cliqué sur approuver
 if (isset($_POST['approuver']) && isset($conn)) {
-    $id_restaurant_a_modif = $_POST['approuver'];
     do {
+        $id_restaurant_a_modif = $_POST['approuver'];
         $query = "UPDATE restaurants SET approuve = 'true' WHERE id='$id_restaurant_a_modif'";
         if (mysqli_query($conn, $query)) {
             FermerConnexion($conn);
@@ -75,8 +75,8 @@ if (isset($_POST['approuver']) && isset($conn)) {
 
 // Après avoir cliqué sur masquer
 if (isset($_POST['masquer']) && isset($conn)) {
-    $id_restaurant_a_modif = $_POST['masquer'];
     do {
+        $id_restaurant_a_modif = $_POST['masquer'];
         $query = "UPDATE restaurants SET approuve = 'false' WHERE id='$id_restaurant_a_modif'";
         if (mysqli_query($conn, $query)) {
             FermerConnexion($conn);
@@ -93,8 +93,8 @@ if (isset($_POST['masquer']) && isset($conn)) {
 
 // Après avoir cliqué sur supprimer
 if (isset($_POST['supprimer']) && isset($conn)) {
-    $id_restaurant_a_suppr = $_POST['supprimer'];
     do {
+        $id_restaurant_a_suppr = $_POST['supprimer'];
         $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_suppr'";
         $query2 = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
         if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
@@ -112,28 +112,24 @@ if (isset($_POST['supprimer']) && isset($conn)) {
 
 // Après avoir cliqué sur supprimer user
 if (isset($_POST['supprimer_user']) && isset($conn)) {
-    $id_user_a_suppr = $_POST['supprimer_user'];
-    try {
-        do {
-            $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_user_a_suppr'";
-            $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_user_a_suppr'";
-            $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_user_a_suppr'";
-            $query4 = "DELETE FROM utilisateurs WHERE id='$id_user_a_suppr'";
+    do {
+        $id_user_a_suppr = $_POST['supprimer_user'];
+        $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_user_a_suppr'";
+        $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_user_a_suppr'";
+        $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_user_a_suppr'";
+        $query4 = "DELETE FROM utilisateurs WHERE id='$id_user_a_suppr'";
 
-            if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
-                FermerConnexion($conn);
-                // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
-                $_SESSION['successMessage'] = "Utilisateur et ses restaurants supprimés";
-                header('location: ' . $_SERVER['PHP_SELF']);
-                exit();
-            } else {
-                array_push($erreurs, mysqli_error($conn));
-                break;
-            }
-        } while (0);
-    } catch (\Throwable $th) {
-        array_push($erreurs, $th);
-    }
+        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
+            FermerConnexion($conn);
+            // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+            $_SESSION['successMessage'] = "Utilisateur et ses restaurants supprimés";
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+    } while (0);
 }
 ?>
 
@@ -181,9 +177,20 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
             <?php endforeach; ?>
         </div>
         <?php if (!isset($auMoinsUnRestoEnAttente)) : ?>
-            <div class="alert shadow-lg alert-success md:w-1/2 mx-auto">
-                Tous les restaurants sont approuvés !
-            </div>
+            <?php if (count($restos) > 0) : ?>
+                <div class="alert shadow-lg alert-success md:w-1/2 mx-auto">
+                    Tous les restaurants sont approuvés !
+                </div>
+            <?php else : ?>
+                <div class="alert shadow-lg md:w-1/2 mx-auto">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Aucun restaurant en attente d'approbation</span>
+                    </div>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 

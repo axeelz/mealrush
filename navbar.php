@@ -80,7 +80,7 @@ if (!$_SESSION["item_panier"]) {
                         <li><a href="restaurateur.php">Gestion restaurants</a></li>
                     <?php endif; ?>
                     <?php if ($isAdmin) : ?>
-                        <li><a href="admin.php">Portail admin</a></li>
+                        <li><a href="admin.php">Gestion admin</a></li>
                     <?php endif; ?>
                     <li><a href="">Mes commandes</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>
