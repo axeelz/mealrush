@@ -107,7 +107,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     } while (0);
 }
 
-// Définition de l'adresse de l'utilisateur 
+// Modification infos utilisateur 
 if (isset($_POST['modifier']) && isset($conn)) {
     do {
         // On récupère les valeurs du formulaire
