@@ -83,6 +83,52 @@ if (isset($_POST['setadress']) && isset($conn)) {
         }
     } while (0);
 }
+
+// Après avoir cliqué sur supprimer user
+if (isset($_POST['supprimer_user']) && isset($conn)) {
+    do {
+        $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_utilisateur'";
+        $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_utilisateur'";
+        $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_utilisateur'";
+        $query4 = "DELETE FROM utilisateurs WHERE id='$id_utilisateur'";
+
+        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
+            FermerConnexion($conn);
+            // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+            $_SESSION['successMessage'] = "Votre compte a bien été supprimé";
+            session_unset();
+            session_destroy();
+            header("location: index.php");
+            exit();
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+    } while (0);
+}
+
+// Définition de l'adresse de l'utilisateur 
+if (isset($_POST['modifier']) && isset($conn)) {
+    do {
+        // On récupère les valeurs du formulaire
+        $prenom_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_prenom']));
+        $nom_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_nom']));
+        $email_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_email']));
+
+        if ($prenom_updated != $_SESSION['prenom'] || $nom_updated != $_SESSION['nom'] || $email_updated != $_SESSION['email']) {
+            $query = "UPDATE utilisateurs SET prenom='$prenom_updated', nom='$nom_updated', email='$email_updated' WHERE id='$id_utilisateur'";
+            if (mysqli_query($conn, $query)) {
+                $_SESSION['prenom'] = $prenom_updated;
+                $_SESSION['nom'] = $nom_updated;
+                $_SESSION['email'] = $email_updated;
+                $_SESSION['successMessage'] = "Informations modifiées";
+            } else {
+                array_push($erreurs, mysqli_error($conn));
+                break;
+            }
+        }
+    } while (0);
+}
 ?>
 
 <!DOCTYPE html>
@@ -412,6 +458,7 @@ if (isset($_POST['setadress']) && isset($conn)) {
             <h1 class="text-2xl font-bold md:text-3xl text-center">Ravis de vous revoir, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
 
             <?php if (empty($_GET['modification'])) : ?>
+
                 <div class="card w-fit min-w-[40%] shadow-md my-10 mx-auto">
 
                     <div class="avatar placeholder mx-auto mt-5">
@@ -428,6 +475,9 @@ if (isset($_POST['setadress']) && isset($conn)) {
                             <a class="btn btn-ghost" href="#ouvrir-moyens-de-paiement">Moyens de paiement</a>
                         </div>
                         <a class="btn btn-neutral" href="?modification=1">Modifier les informations</a>
+                        <form method="post">
+                            <button class="btn btn-ghost text-error" name="supprimer_user" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer votre compte ?');">Supprimer le compte</button>
+                        </form>
                     </div>
 
                     <div class="stats">
@@ -455,6 +505,7 @@ if (isset($_POST['setadress']) && isset($conn)) {
 
                     </div>
                 </div>
+
             <?php else : ?>
                 <!-- Mode modification -->
                 <div class="card w-fit shadow-md my-10 mx-auto">
@@ -468,18 +519,18 @@ if (isset($_POST['setadress']) && isset($conn)) {
                         <form class="form-control items-center gap-2" method="post" action="compte.php">
                             <div class="grid grid-cols-2 gap-4">
                                 <div id="row-1">
-                                    <input type="text" value="<?php echo $_SESSION['prenom'] ?>" class="card-title text-center input input-bordered bg-slate-100 w-full" />
+                                    <input type="text" value="<?php echo $_SESSION['prenom'] ?>" name="update_prenom" class="card-title text-center input input-bordered bg-slate-100 w-full" />
                                 </div>
                                 <div id="row-2">
-                                    <input type="text" value="<?php echo $_SESSION['nom'] ?>" class="card-title text-center input input-bordered bg-slate-100 w-full" />
+                                    <input type="text" value="<?php echo $_SESSION['nom'] ?>" name="update_nom" class="card-title text-center input input-bordered bg-slate-100 w-full" />
                                 </div>
                             </div>
-                            <input type="text" value="<?php echo $_SESSION['email'] ?>" class="text-center input input-bordered bg-slate-100 w-full" />
+                            <input type="text" value="<?php echo $_SESSION['email'] ?>" name="update_email" class="text-center input input-bordered bg-slate-100 w-full" />
                             <div class="card-actions">
-                                <button class="btn btn-neutral mt-5 gap-2"">
+                                <button name="modifier" class="btn btn-neutral mt-5 gap-2">
                                     Enregistrer
                                     <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </button>
                             </div>
@@ -487,6 +538,7 @@ if (isset($_POST['setadress']) && isset($conn)) {
                     </div>
                 </div>
             <?php endif; ?>
+
         </div>
 
     <?php endif; ?>
@@ -499,9 +551,6 @@ if (isset($_POST['setadress']) && isset($conn)) {
             <?php foreach ($adresses as $a) : ?>
                 <button class="btn btn-ghost gap-2">
                     <?php echo $a; ?>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M 18 2 L 15.585938 4.4140625 L 19.585938 8.4140625 L 22 6 L 18 2 z M 14.076172 5.9238281 L 3 17 L 3 21 L 7 21 L 18.076172 9.9238281 L 14.076172 5.9238281 z" />
-                    </svg>
                 </button>
             <?php endforeach; ?>
             <div class="modal-action">

@@ -52,19 +52,24 @@ try {
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
 
-    <?php if ($isConnecte) : ?>
-        <?php if ($hasAdresse) : ?>
+    <!-- <?php // if ($isConnecte) : 
+            ?>
+        <?php // if ($hasAdresse) : 
+        ?>
             <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
                 Livraison ->
                 <a class="text-sm text-opacity-80 font-normal ml-1 link" href="compte.php?selection=1#ouvrir-adresses">5 rue de Rivoli</a>
             </div>
-        <?php else : ?>
+        <?php // else : 
+        ?>
             <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
                 Livraison ->
                 <a class="text-sm text-opacity-80 font-normal ml-1 link text-error" href="compte.php">Vous n'avez pas encore défini d'adresse</a>
             </div>
-        <?php endif; ?>
-    <?php endif; ?>
+        <?php // endif; 
+        ?>
+    <?php // endif; 
+    ?> -->
 
     <div class="hero">
         <div class="hero-content flex-col lg:flex-row">
@@ -102,6 +107,8 @@ try {
             </div>
         </div>
     </div>
+
+    <div class="divider">Menu de <?php echo $r['nom']; ?></div>
 
     <?php include('footer.php'); ?>
 
