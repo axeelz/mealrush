@@ -505,9 +505,20 @@ try {
 
             <div class="divider">Menu</div>
 
-            <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
-                <p class="text-4xl text-center"><?php echo $p['nom']; ?></p>
-            <?php endforeach; ?>
+            <div class="lg:grid lg:grid-cols-2 lg:gap-2">
+                <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
+                    <div class="card card-side bg-error shadow-xl w-[400px] mx-auto">
+                        <figure class="w-40"><img src=" <?php echo $p['image']; ?>" alt="" class="w-full h-full" /></figure>
+                        <div class="card-body">
+                            <h2 class="card-title"><?php echo $p['nom']; ?></h2>
+                            <div class="badge badge-lg"><?php echo $p['prix']; ?> €</div>
+                            <div class="card-actions justify-end">
+                                <button class="btn btn-primary">Ajouter au panier</button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
         <?php endif; ?>
 
