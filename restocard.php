@@ -45,7 +45,7 @@
                 <form method="post">
                     <?php if ($r['approuve'] == 'true') : ?>
                         <button name="gerer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Gérer</button>
-                        <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
+                        <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer ce restaurant ?');">Supprimer</button>
                     <?php else : ?>
                         <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Annuler</button>
                     <?php endif; ?>

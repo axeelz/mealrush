@@ -188,6 +188,8 @@ try {
         if ($resto_a_modifier != false) {
             // On active le mode modification
             $veutGererResto = true;
+            // On met en tant que variable de session l'id du resto à modifier
+            $_SESSION['idRestoAModifier'] = $_POST['gerer'];
         } else {
             array_push($erreurs, "Le restaurant que vous tentez de modifier ne vous appartient pas");
         }
@@ -196,20 +198,10 @@ try {
     // Après avoir soumis le formulaire de modification de restaurant
     if (isset($_POST['modifier']) && isset($conn)) {
         do {
-            // On vérifie si la valeur associée au bouton "enregistrer" (l'id du resto que l'utilisateur veut modifier)
-            // est bien dans la liste des restaurants appartenant à cet utilisateur,
-            // pour éviter qu'il puisse modifier un autre restaurant en inspectant l'élément
-            // et en modifiant la valeur du bouton
-
-            // La fonction current récupère le premier élement d'une liste, ou false si elle est vide
+            // On récupère les infos sur le restaurant à modifier depuis l'id stocké dans la variable de session
             $resto_a_modifier = current(array_filter($restos, function ($resto) {
-                return $resto['id'] == $_POST['modifier'];
+                return $resto['id'] == $_SESSION['idRestoAModifier'];
             }));
-
-            if ($resto_a_modifier == false) {
-                array_push($erreurs, "Le restaurant que vous tentez de modifier ne vous appartient pas");
-                break;
-            }
 
             $id_restaurant_a_modif = $resto_a_modifier['id'];
 
@@ -492,7 +484,7 @@ try {
                                 <span class="label-text">Lien vers l'image</span>
                             </label>
                             <input type="text" value="<?php echo $resto_a_modifier['image'] ?>" name="update_image" class="input input-bordered bg-slate-100 w-full" />
-                            <button name="modifier" value="<?php echo $resto_a_modifier['id'] ?>" class="btn btn-success mt-5 gap-2">
+                            <button name="modifier" class="btn btn-success mt-5 gap-2">
                                 Enregistrer
                                 <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -511,7 +503,7 @@ try {
                         <figure class="w-40"><img src=" <?php echo $p['image']; ?>" alt="" class="w-full h-full" /></figure>
                         <div class="card-body">
                             <h2 class="card-title"><?php echo $p['nom']; ?></h2>
-                            <div class="badge badge-lg"><?php echo $p['prix']; ?> €</div>
+                            <div class="badge badge-lg"><?php echo str_replace(".", ",", $p['prix']); ?> €</div>
                             <div class="card-actions justify-end">
                                 <button class="btn btn-primary">Ajouter au panier</button>
                             </div>
