@@ -44,7 +44,7 @@
             <?php elseif (basename($_SERVER['PHP_SELF']) == "restaurateur.php") : ?>
                 <form method="post">
                     <?php if ($r['approuve'] == 'true') : ?>
-                        <button name="modifier" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Modifier</button>
+                        <button name="gerer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Gérer</button>
                         <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
                     <?php else : ?>
                         <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-ghost mt-2">Annuler</button>

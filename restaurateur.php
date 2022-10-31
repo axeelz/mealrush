@@ -19,20 +19,35 @@ try {
     $query = "SELECT * FROM restaurants WHERE id_utilisateur = '$id_utilisateur'";
     $result = mysqli_query($conn, $query);
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        $id_restaurant = $row['id'];
         // Pour chaque restaurant, on liste ses tags
         $tags_du_resto = array();
-        $id_restaurant = $row['id'];
         $query_get_tags_restaurant = "SELECT tags.nom_tag FROM restaurants_tags JOIN tags ON restaurants_tags.id_tag = tags.id WHERE restaurants_tags.id_restaurant = '$id_restaurant'";
         $result_get_tags_restaurant = mysqli_query($conn, $query_get_tags_restaurant);
         while ($tag_restaurant = mysqli_fetch_array($result_get_tags_restaurant, MYSQLI_ASSOC)) {
             array_push($tags_du_resto, $tag_restaurant['nom_tag']);
         }
+
+        // Pour chaque restaurant, on liste ses plats
+        $plats_du_resto = array();
+        $query_get_plats_restaurant = "SELECT * FROM plats WHERE id_restaurant='$id_restaurant'";
+        $result_get_plats_restaurant = mysqli_query($conn, $query_get_plats_restaurant);
+        while ($plat_restaurant = mysqli_fetch_array($result_get_plats_restaurant, MYSQLI_ASSOC)) {
+            array_push($plats_du_resto, array(
+                'nom' => $plat_restaurant['nom'],
+                'prix' => $plat_restaurant['prix'],
+                'image' => $plat_restaurant['image'],
+                'type' => $plat_restaurant['type']
+            ));
+        }
+
         array_push($restos, array(
             'nom' => $row['nom'],
             'image' => $row['image'],
             'id' => $row['id'],
             'approuve' => $row['approuve'],
-            'tags' => $tags_du_resto
+            'tags' => $tags_du_resto,
+            'plats' => $plats_du_resto
         ));
     }
 
@@ -55,25 +70,22 @@ try {
         return $resto["approuve"] == "false";
     }));
 
-    // Après avoir cliqué sur annuler (demande d'approbation) / ou supprimer resto
+    // Après avoir cliqué sur annuler la demande d'approbation) / ou supprimer le resto
     if (isset($_POST['supprimer']) && isset($conn)) {
         do {
             $id_restaurant_a_suppr = $_POST['supprimer'];
 
-            // On vérifie que le restaurant que l'utilisateur veur supprimer est bien à lui
-            // (pour pas qu'un utilisateur puisse supprimer le resto d'un autre en modifiant l'id situé dans la valeur du bouton)
-            // en inspectant l'élement
+            // On vérifie si la valeur associée au bouton "supprimer" (l'id du resto que l'utilisateur veut supprimer)
+            // est bien dans la liste des restaurants appartenant à cet utilisateur,
+            // pour éviter qu'il puisse supprimer un autre restaurant en inspectant l'élément
+            // et en modifiant la valeur du bouton.
+            $nb_restos_de_cet_user_ayant_cet_id = count(array_filter($restos, function ($resto) {
+                return $resto['id'] == $_POST['supprimer'];
+            }));
 
-            $query_verif = "SELECT * FROM restaurants WHERE id = '$id_restaurant_a_suppr'";
-            $result = mysqli_query($conn, $query_verif);
-            $row = mysqli_fetch_assoc($result);
-
-            // Soit on a bien trouvé une valeur, soit on renvoie false
-            $proprietaire_resto = $row['id_utilisateur'] ?? false;
-
-            if ($proprietaire_resto == false) {
-                // Aucun resto avec cet id
-                array_push($erreurs, "Le restaurant que vous tentez de supprimer n'existe pas");
+            if ($nb_restos_de_cet_user_ayant_cet_id == 0) {
+                // Aucun resto avec cet id appartenant à l'utilisateur
+                array_push($erreurs, "Le restaurant que vous tentez de supprimer ne vous appartient pas");
                 break;
             }
 
@@ -92,6 +104,7 @@ try {
         } while (0);
     }
 
+    // Après avoir soumis le formulaire d'ajout de restaurant
     if (isset($_POST['create']) && isset($conn)) {
         do {
             // On récupère les valeurs du formulaire
@@ -106,9 +119,9 @@ try {
 
             // Si tout est bon, on crée un restaurant
             if ($_SESSION['role'] == 'admin') {
-                $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`, `approuve`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur', 'true')";
+                $query = "INSERT INTO restaurants (nom, `image`, `id_utilisateur`, `approuve`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur', 'true')";
             } else {
-                $query = "INSERT INTO `restaurants` (`nom`, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur')";
+                $query = "INSERT INTO restaurants (nom, `image`, `id_utilisateur`) VALUES ('$nom_resto', '$image_resto', '$id_utilisateur')";
             }
             if (mysqli_query($conn, $query)) {
                 $id_restaurant = mysqli_insert_id($conn);
@@ -125,6 +138,8 @@ try {
             foreach ($checkboxes as $c) {
                 $tag_nom = explode(":", $c)[0];
                 $tag_id = explode(":", $c)[1];
+
+                // Vérification que le tag est bien dans la BDD (et qu'il a pas été modifié avec inspecter l'élément)
                 $result = mysqli_query($conn, "SELECT * FROM `tags` WHERE nom_tag='$tag_nom' AND id='$tag_id'");
                 $count = mysqli_num_rows($result);
 
@@ -147,12 +162,143 @@ try {
         } while (0);
     }
 
+    // Passer en mode ajout de restaurant
     if (isset($_POST['ajouter']) && isset($conn)) {
         $veutAjouterRestaurant = true;
     }
 
+    // Bouton annuler l'opération en cours
     if (isset($_POST['annuler']) && isset($conn)) {
         $veutAjouterRestaurant = false;
+        $veutGererResto = false;
+    }
+
+    // Passer en mode gestion du restaurant
+    if (isset($_POST['gerer']) && isset($conn)) {
+        // On vérifie si la valeur associée au bouton "gérér" (l'id du resto que l'utilisateur veut modifier)
+        // est bien dans la liste des restaurants appartenant à cet utilisateur,
+        // pour éviter qu'il puisse modifier un autre restaurant en inspectant l'élément
+        // et en modifiant la valeur du bouton
+
+        // La fonction current récupère le premier élement d'une liste, ou false si elle est vide
+        $resto_a_modifier = current(array_filter($restos, function ($resto) {
+            return $resto['id'] == $_POST['gerer'];
+        }));
+
+        if ($resto_a_modifier != false) {
+            // On active le mode modification
+            $veutGererResto = true;
+        } else {
+            array_push($erreurs, "Le restaurant que vous tentez de modifier ne vous appartient pas");
+        }
+    }
+
+    // Après avoir soumis le formulaire de modification de restaurant
+    if (isset($_POST['modifier']) && isset($conn)) {
+        do {
+            // On vérifie si la valeur associée au bouton "enregistrer" (l'id du resto que l'utilisateur veut modifier)
+            // est bien dans la liste des restaurants appartenant à cet utilisateur,
+            // pour éviter qu'il puisse modifier un autre restaurant en inspectant l'élément
+            // et en modifiant la valeur du bouton
+
+            // La fonction current récupère le premier élement d'une liste, ou false si elle est vide
+            $resto_a_modifier = current(array_filter($restos, function ($resto) {
+                return $resto['id'] == $_POST['modifier'];
+            }));
+
+            if ($resto_a_modifier == false) {
+                array_push($erreurs, "Le restaurant que vous tentez de modifier ne vous appartient pas");
+                break;
+            }
+
+            $id_restaurant_a_modif = $resto_a_modifier['id'];
+
+            // On récupère les valeurs du formulaire
+            $nom_resto_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_nom']));
+            $image_resto_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_image']));
+
+            $checkboxes = $_POST['tags'];
+
+            // On parcourt les checkboxes checkées pour ajouter les éventuels nouveaux tags
+            foreach ($checkboxes as $c) {
+                $tag_nom = explode(":", $c)[0];
+                $tag_id = explode(":", $c)[1];
+
+                // On ajoute seulement les tags qui ne font pas déjà partie des tags du resto
+                if (!in_array($tag_nom, $resto_a_modifier['tags'])) {
+
+                    // Vérification que le tag est bien dans la BDD (et qu'il a pas été modifié avec inspecter l'élément)
+                    $result = mysqli_query($conn, "SELECT * FROM tags WHERE nom_tag='$tag_nom' AND id='$tag_id'");
+                    $count = mysqli_num_rows($result);
+
+                    if ($count == 1) {
+                        $query = "INSERT INTO restaurants_tags (`id_restaurant`, `id_tag`) VALUES ('$id_restaurant_a_modif', '$tag_id')";
+
+                        if (mysqli_query($conn, $query)) {
+                            $auMoinsUnTagModifie = true;
+                        } else {
+                            array_push($erreurs, "Impossible d'ajouter les tags");
+                            break;
+                        }
+                    } else {
+                        array_push($erreurs, $tag_nom . " n'est pas un tag reconnu");
+                        break;
+                    }
+                }
+            }
+
+            $noms_tags_selectionnes = array();
+            foreach ($checkboxes as $c) {
+                array_push($noms_tags_selectionnes, explode(":", $c)[0]);
+            }
+
+            // On parcourt les tags existants du resto pour vérifier si certains n'ont pas été décochés
+            // Si c'est le cas on les supprime du resto
+            foreach ($resto_a_modifier['tags'] as $tag_existant) {
+                // Si le tag n'est pas dans la liste des tags cochés, on le supprime
+                if (!in_array($tag_existant, $noms_tags_selectionnes)) {
+                    $query = "SELECT id FROM tags WHERE nom_tag='$tag_existant'";
+                    $result = mysqli_query($conn, $query);
+                    $row = mysqli_fetch_assoc($result);
+                    $id_tag_a_suppr = $row['id'];
+
+                    $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_modif' AND id_tag='$id_tag_a_suppr'";
+
+                    if (mysqli_query($conn, $query)) {
+                        $auMoinsUnTagModifie = true;
+                    } else {
+                        array_push($erreurs, "Impossible de supprimer le tag " . $tag_existant);
+                        break;
+                    }
+                }
+            }
+
+            if (isset($auMoinsUnTagModifie))
+                $_SESSION['successMessage'] = "Tags mis a jour";
+
+            if ($nom_resto_updated != $resto_a_modifier['nom'] || $image_resto_updated != $resto_a_modifier['image']) {
+                if (empty($nom_resto_updated) || empty($image_resto_updated)) {
+                    array_push($erreurs, "Un des champs requis est vide");
+                    break;
+                }
+
+                $query = "UPDATE restaurants SET `nom`='$nom_resto_updated', `image`='$image_resto_updated' WHERE id='$id_restaurant_a_modif'";
+                if (mysqli_query($conn, $query)) {
+                    if (isset($auMoinsUnTagModifie)) {
+                        $_SESSION['successMessage'] = "Restaurant et tags mis a jour";
+                    } else {
+                        $_SESSION['successMessage'] = "Restaurant mis a jour";
+                    }
+                } else {
+                    array_push($erreurs, mysqli_error($conn));
+                    break;
+                }
+            }
+
+            FermerConnexion($conn);
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } while (0);
     }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
@@ -177,6 +323,7 @@ try {
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
 
+    <!-- Si le seul resto de l'user est en attente de validation -->
     <?php if ($nb_approuves == 0 && $nb_en_attente == 1) : ?>
 
         <div class="hero min-h-screen" style="background-image: url(<?php echo $restos[0]['image']; ?>);">
@@ -194,6 +341,7 @@ try {
 
     <?php else : ?>
 
+        <!-- Si aucun resto ou veut ajouter un nouveau resto -->
         <?php if (($nb_approuves == 0 && $nb_en_attente == 0) || $veutAjouterRestaurant) : ?>
 
             <div class="hero min-h-screen" style="background-image: url(https://online.jwu.edu/sites/default/files/styles/article_feature_page/public/field/image/opening%20a%20restaurant.jpg);">
@@ -254,7 +402,8 @@ try {
                 </div>
             </div>
 
-        <?php else : ?>
+            <!-- Affichage de la liste des restos -->
+        <?php elseif (!$veutGererResto) : ?>
 
             <div class="hero bg-green min-h-[12rem] text-center">
                 <div class="hero-content">
@@ -305,6 +454,60 @@ try {
                     </div>
                 <?php endif; ?>
             </div>
+
+
+        <?php else : ?>
+
+            <div class="hero bg-green min-h-[12rem] text-center">
+                <div class="hero-content">
+                    <div class="max-w-md">
+                        <h1 class="text-5xl font-bold text-white">Gestion restaurant</h1>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                <div class="hero">
+                    <div class="hero-content flex-col lg:flex-row">
+                        <img src="<?php echo $resto_a_modifier['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+                        <div>
+                            <input type="text" value="<?php echo $resto_a_modifier['nom'] ?>" name="update_nom" class="text-5xl font-bold mb-2 input input-lg input-bordered bg-slate-100 w-full" />
+                            <div tabindex="0" class="collapse collapse-arrow border border-base-300 rounded-box my-2 max-h-56 overflow-scroll">
+                                <input type="checkbox" />
+                                <div class="collapse-title">
+                                    Catégories du restaurant
+                                </div>
+                                <div class="collapse-content">
+                                    <div class="form-control">
+                                        <?php foreach ($tags as $t) : ?>
+                                            <label class="label cursor-pointer">
+                                                <span class="label-text"><?php echo $t['nom_tag']; ?></span>
+                                                <input type="checkbox" class="checkbox" name="tags[]" value="<?php echo $t['nom_tag'] . ":" . $t['id_tag'] ?>" <?php if (in_array($t['nom_tag'], $resto_a_modifier['tags'])) echo "checked"; ?> />
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="update_image" class="label">
+                                <span class="label-text">Lien vers l'image</span>
+                            </label>
+                            <input type="text" value="<?php echo $resto_a_modifier['image'] ?>" name="update_image" class="input input-bordered bg-slate-100 w-full" />
+                            <button name="modifier" value="<?php echo $resto_a_modifier['id'] ?>" class="btn btn-success mt-5 gap-2">
+                                Enregistrer
+                                <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="divider">Menu</div>
+
+            <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
+                <p class="text-4xl text-center"><?php echo $p['nom']; ?></p>
+            <?php endforeach; ?>
 
         <?php endif; ?>
 

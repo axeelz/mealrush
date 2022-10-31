@@ -105,6 +105,8 @@ if (isset($_POST['signup']) && isset($conn)) {
             foreach ($checkboxes as $c) {
                 $tag_nom = explode(":", $c)[0];
                 $tag_id = explode(":", $c)[1];
+
+                // Vérification que le tag est bien dans la BDD (et qu'il a pas été modifié avec inspecter l'élément)
                 $result = mysqli_query($conn, "SELECT * FROM `tags` WHERE nom_tag='$tag_nom' AND id='$tag_id'");
                 $count = mysqli_num_rows($result);
 

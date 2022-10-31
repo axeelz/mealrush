@@ -62,10 +62,10 @@ try {
 
     <div class="flex items-center p-4 max-w-100 bg-base-300 overflow-x-auto" id="tags-container">
         <?php if (!empty($_GET['tag'])) : ?>
-            <a class="btn btn-ghost first:ml-auto last:mr-auto" href="index.php">&lt;- Tout</a>
+            <a class="btn btn-ghost first:ml-auto last:mr-auto" href="index.php">Tous</a>
         <?php endif; ?>
         <?php foreach ($tags as $t) : ?>
-            <a class="btn btn-ghost first:ml-auto last:mr-auto" href="index.php?tag=<?php echo $t['id_tag']; ?>"><?php echo $t['nom_tag']; ?></a>
+            <a class="btn btn-ghost first:ml-auto last:mr-auto <?php if ($_GET['tag'] == $t['id_tag']) echo 'bg-gray' ?>" href="index.php?tag=<?php echo $t['id_tag']; ?>"><?php echo $t['nom_tag']; ?></a>
         <?php endforeach; ?>
     </div>
 
@@ -95,7 +95,7 @@ try {
             <div class="hero-content text-center text-neutral-content flex-col">
                 <img src="img/logo.png" class="w-72 rounded-lg shadow-2xl mb-3" />
                 <div class="max-w-md">
-                    <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics !</h1>
+                    <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
                     <p class="py-6">
                         Recevez votre plat sur le pas de votre porte en un rien de temps avec MealRush.
                     </p>

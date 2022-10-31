@@ -116,12 +116,19 @@ if (isset($_POST['modifier']) && isset($conn)) {
         $email_updated = mysqli_real_escape_string($conn, htmlspecialchars($_POST['update_email']));
 
         if ($prenom_updated != $_SESSION['prenom'] || $nom_updated != $_SESSION['nom'] || $email_updated != $_SESSION['email']) {
+
+            if (empty($email_updated)) {
+                array_push($erreurs, "Vous devez avoir une adresse e-mail associée à votre compte");
+                break;
+            }
+
             $query = "UPDATE utilisateurs SET prenom='$prenom_updated', nom='$nom_updated', email='$email_updated' WHERE id='$id_utilisateur'";
+
             if (mysqli_query($conn, $query)) {
                 $_SESSION['prenom'] = $prenom_updated;
                 $_SESSION['nom'] = $nom_updated;
                 $_SESSION['email'] = $email_updated;
-                $_SESSION['successMessage'] = "Informations modifiées";
+                array_push($succes, "Informations modifiées");
             } else {
                 array_push($erreurs, mysqli_error($conn));
                 break;
