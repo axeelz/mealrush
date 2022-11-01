@@ -29,7 +29,7 @@ if (!$_SESSION['panier']) {
 if (isset($_POST['ajouter_panier'])) {
     do {
         $id_produit = $_POST['ajouter_panier'];
-        $result = mysqli_query($conn, "SELECT * FROM plats WHERE id='$id_produit'");
+        $result = mysqli_query($conn, "SELECT plats.nom, plats.prix, plats.image, restaurants.nom AS rn FROM plats JOIN restaurants ON restaurants.id = plats.id_restaurant WHERE plats.id='$id_produit'");
         $row = mysqli_fetch_assoc($result);
 
         if ($row == false) {
@@ -43,7 +43,8 @@ if (isset($_POST['ajouter_panier'])) {
                 'id' => $id_produit,
                 'prix' => $row['prix'],
                 'quantite' => 1,
-                'image' => $row['image']
+                'image' => $row['image'],
+                'restaurant' => $row['rn']
             )
         );
 
@@ -62,7 +63,7 @@ if (isset($_POST['ajouter_panier'])) {
             $_SESSION['panier']['nb_total']++;
             $_SESSION['panier']['prix_total'] += $row['prix'];
         }
-        $_SESSION['successMessage'] = "Produit ajouté à votre panier";
+        $_SESSION['successMessage'] = $row['nom'] . " ajouté à votre panier";
         header('location: ' . basename($_SERVER['REQUEST_URI']));
         exit();
     } while (0);
@@ -136,7 +137,7 @@ if (isset($_POST['moins1'])) {
         on a besoin d'actualiser la page pour metre a jour les informations du panier.
         Pour pas que l'utilisateur ait à rouvrir le panier, on l'ouvre par défaut
         avec la classe dropdown-open -->
-        <div class="dropdown dropdown-end <?php if ($_SESSION['forcerPanierOuvert']) echo "dropdown-open"; ?>" id="dropdown-panier">
+        <div class="dropdown dropdown-end <?php if ($_SESSION['forcerPanierOuvert'] && basename($_SERVER['PHP_SELF']) == "restaurants.php") echo "dropdown-open"; ?>" id="dropdown-panier">
             <?php unset($_SESSION['forcerPanierOuvert']); ?>
             <script>
                 // Si le panier a été ouvert par défaut au chargement de la page
@@ -166,15 +167,15 @@ if (isset($_POST['moins1'])) {
                     <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
                         <div class="w-full flex justify-between h-12 items-center">
                             <p>
-                                <?php echo $i['nom'] ?>
-                                <span class="badge badge-md badge-outline"><?php echo $i['quantite'] ?></span>
+                                <?php echo $i['nom']; ?>
+                                <span class="badge badge-md badge-outline"><?php echo $i['quantite']; ?></span>
                             </p>
                             <form method="post">
                                 <div class="gap-2">
-                                    <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id'] ?>">
+                                    <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id']; ?>">
                                         -
                                     </button>
-                                    <button name="plus1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id'] ?>">
+                                    <button name="plus1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id']; ?>">
                                         +
                                     </button>
                                 </div>

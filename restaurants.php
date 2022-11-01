@@ -8,6 +8,11 @@ try {
 
     $id_restaurant = (int)$_GET['id'];
 
+    if (empty($id_restaurant)) {
+        header("location: index.php");
+        exit();
+    }
+
     // On récupère les infos sur le restaurant en question
     $query = "SELECT * FROM restaurants WHERE id = '$id_restaurant'";
     $result = mysqli_query($conn, $query);
