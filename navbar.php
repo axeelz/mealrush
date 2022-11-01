@@ -17,9 +17,97 @@ if ($_SESSION['role'] == 'restaurateur' || $isAdmin) {
     $isRestaurateur = false;
 }
 
-if (!$_SESSION["item_panier"]) {
+if (!$_SESSION['panier']) {
     $nb_items = 0;
     $prix_total = 0;
+} else {
+    $nb_items = $_SESSION['panier']['nb_total'];
+    $prix_total = $_SESSION['panier']['prix_total'];
+}
+
+// Ajouter un article au panier
+if (isset($_POST['ajouter_panier'])) {
+    do {
+        $id_produit = $_POST['ajouter_panier'];
+        $result = mysqli_query($conn, "SELECT * FROM plats WHERE id='$id_produit'");
+        $row = mysqli_fetch_assoc($result);
+
+        if ($row == false) {
+            array_push($erreurs, "Produit inexistant");
+            break;
+        }
+
+        $plats_dans_panier = array(
+            $id_produit => array(
+                'nom' => $row['nom'],
+                'id' => $id_produit,
+                'prix' => $row['prix'],
+                'quantite' => 1,
+                'image' => $row['image']
+            )
+        );
+
+        if (empty($_SESSION['panier'])) {
+            $_SESSION['panier'] = array(
+                'items' => $plats_dans_panier,
+                'nb_total' => 1,
+                'prix_total' => $row['prix'],
+            );
+        } else {
+            if (in_array($id_produit, array_keys($_SESSION['panier']['items']))) {
+                $_SESSION['panier']['items'][$id_produit]['quantite']++;
+            } else {
+                $_SESSION['panier']['items'] += $plats_dans_panier;
+            }
+            $_SESSION['panier']['nb_total']++;
+            $_SESSION['panier']['prix_total'] += $row['prix'];
+        }
+        $_SESSION['successMessage'] = "Produit ajouté à votre panier";
+        header('location: ' . basename($_SERVER['REQUEST_URI']));
+        exit();
+    } while (0);
+}
+
+// Vider le panier
+if (isset($_POST['vider_panier'])) {
+    unset($_SESSION['panier']);
+    $_SESSION['successMessage'] = "Panier vidé";
+    header('location: ' . basename($_SERVER['REQUEST_URI']));
+    exit();
+}
+
+// Ajouter quantité panier
+if (isset($_POST['plus1'])) {
+    $_SESSION['forcerPanierOuvert'] = true;
+
+    $_SESSION['panier']['prix_total'] += $_SESSION['panier']['items'][$_POST['plus1']]['prix'];
+    $_SESSION['panier']['nb_total']++;
+
+    $_SESSION['panier']['items'][$_POST['plus1']]['quantite']++;
+
+    // On utilise REQUEST_URI pour conserver les paramètres d'URL
+    header('location: ' . basename($_SERVER['REQUEST_URI']));
+    exit();
+}
+
+// Retirer quantité panier
+if (isset($_POST['moins1'])) {
+    $_SESSION['forcerPanierOuvert'] = true;
+
+    $_SESSION['panier']['prix_total'] -= $_SESSION['panier']['items'][$_POST['moins1']]['prix'];
+    $_SESSION['panier']['nb_total']--;
+
+    if ($_SESSION['panier']['items'][$_POST['moins1']]['quantite'] > 1) {
+        $_SESSION['panier']['items'][$_POST['moins1']]['quantite']--;
+    } else {
+        unset($_SESSION['panier']['items'][$_POST['moins1']]);
+        if (empty($_SESSION['panier']['items']))
+            $_SESSION['panier']['prix_total'] = 0;
+    }
+
+    // On utilise REQUEST_URI pour conserver les paramètres d'URL
+    header('location: ' . basename($_SERVER['REQUEST_URI']));
+    exit();
 }
 ?>
 
@@ -44,7 +132,24 @@ if (!$_SESSION["item_panier"]) {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
         </button>
-        <div class="dropdown dropdown-end">
+        <!-- Lorsque on vient de modifier la quantité d'un article dans le panier,
+        on a besoin d'actualiser la page pour metre a jour les informations du panier.
+        Pour pas que l'utilisateur ait à rouvrir le panier, on l'ouvre par défaut
+        avec la classe dropdown-open -->
+        <div class="dropdown dropdown-end <?php if ($_SESSION['forcerPanierOuvert']) echo "dropdown-open"; ?>" id="dropdown-panier">
+            <?php unset($_SESSION['forcerPanierOuvert']); ?>
+            <script>
+                // Si le panier a été ouvert par défaut au chargement de la page
+                // on fait en sorte de le refermer quand l'utilisateur clique
+                // en dehors du menu dépliant avec sa souris.
+                const panier = document.getElementById('dropdown-panier');
+                if (panier.classList.contains("dropdown-open")) {
+                    window.addEventListener('click', function(e) {
+                        if (!panier.contains(e.target))
+                            panier.classList.remove("dropdown-open");
+                    })
+                };
+            </script>
             <label tabindex="0" class="btn btn-ghost btn-circle">
                 <div class="indicator">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,12 +158,39 @@ if (!$_SESSION["item_panier"]) {
                     <span class="badge badge-sm indicator-item bg-blue text-black"><?php echo $nb_items ?></span>
                 </div>
             </label>
-            <div tabindex="0" class="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow">
+            <div tabindex="0" class="mt-3 card card-compact dropdown-content w-72 bg-base-100 shadow">
                 <div class="card-body">
-                    <span class="font-bold text-lg"><?php echo $nb_items ?> plats</span>
-                    <span class="">Total: <?php echo $prix_total ?>€</span>
+
+                    <span class="text-xl font-bold">Panier</span>
+
+                    <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
+                        <div class="w-full flex justify-between h-12 items-center">
+                            <p>
+                                <?php echo $i['nom'] ?>
+                                <span class="badge badge-md badge-outline"><?php echo $i['quantite'] ?></span>
+                            </p>
+                            <form method="post">
+                                <div class="gap-2">
+                                    <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id'] ?>">
+                                        -
+                                    </button>
+                                    <button name="plus1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id'] ?>">
+                                        +
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <span class="text-xl font-bold my-2"><?php echo str_replace(".", ",", $prix_total); ?>€</span>
+
                     <div class="card-actions">
-                        <button class="btn bg-blue text-black btn-block hover:text-white">Panier</button>
+                        <?php if ($nb_items > 0) : ?>
+                            <form method="post" class="w-full">
+                                <button name="vider_panier" class="btn btn-ghost text-error border-error btn-block">Vider le panier</button>
+                            </form>
+                            <a href="recapitulatif.php" class="btn bg-blue text-black btn-block hover:text-white border-none">Commander</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

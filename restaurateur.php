@@ -4,7 +4,7 @@ session_start();
 // Page réservée aux restaurateurs
 if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION['role'] == 'utilisateur') {
     header("location: index.php");
-    exit;
+    exit();
 }
 
 include 'ouvrirconnexion.php';
@@ -28,16 +28,24 @@ try {
             array_push($tags_du_resto, $tag_restaurant['nom_tag']);
         }
 
-        // Pour chaque restaurant, on liste ses plats
+        // Pour chaque restaurant, on liste ses plats et le type de ses plats
         $plats_du_resto = array();
         $query_get_plats_restaurant = "SELECT * FROM plats WHERE id_restaurant='$id_restaurant'";
         $result_get_plats_restaurant = mysqli_query($conn, $query_get_plats_restaurant);
         while ($plat_restaurant = mysqli_fetch_array($result_get_plats_restaurant, MYSQLI_ASSOC)) {
+            $id_plat = $plat_restaurant['id'];
+            $query_get_type_restaurant = "SELECT types_de_plats.nom_type, types_de_plats.id FROM plats_types JOIN types_de_plats ON types_de_plats.id = plats_types.id_type WHERE plats_types.id_plat='$id_plat'";
+            $result_get_type_restaurant = mysqli_query($conn, $query_get_type_restaurant);
+            $type = mysqli_fetch_assoc($result_get_type_restaurant);
             array_push($plats_du_resto, array(
                 'nom' => $plat_restaurant['nom'],
                 'prix' => $plat_restaurant['prix'],
                 'image' => $plat_restaurant['image'],
-                'type' => $plat_restaurant['type']
+                'type' => array(
+                    'nom' => $type['nom_type'],
+                    'id' => $type['id']
+                ),
+                'id' => $plat_restaurant['id']
             ));
         }
 
@@ -59,6 +67,17 @@ try {
         array_push($tags, array(
             'nom_tag' => $row["nom_tag"],
             'id_tag' => $row["id"]
+        ));
+    }
+
+    // On récupère les types de plats pour les afficher (lors de l'ajout d'un plat)
+    $types = array();
+    $query = "SELECT * FROM types_de_plats";
+    $result = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        array_push($types, array(
+            'nom_type' => $row["nom_type"],
+            'id_type' => $row["id"]
         ));
     }
 
@@ -495,22 +514,71 @@ try {
                 </div>
             </form>
 
-            <div class="divider">Menu</div>
+            <div class="divider" id="menu">Gestion du menu</div>
 
-            <div class="lg:grid lg:grid-cols-2 lg:gap-2">
-                <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
-                    <div class="card card-side bg-error shadow-xl w-[400px] mx-auto">
-                        <figure class="w-40"><img src=" <?php echo $p['image']; ?>" alt="" class="w-full h-full" /></figure>
-                        <div class="card-body">
-                            <h2 class="card-title"><?php echo $p['nom']; ?></h2>
-                            <div class="badge badge-lg"><?php echo str_replace(".", ",", $p['prix']); ?> €</div>
-                            <div class="card-actions justify-end">
-                                <button class="btn btn-primary">Ajouter au panier</button>
-                            </div>
+            <div class="flex content-center justify-center">
+                <label for="ajout-plat" class="btn bg-blue text-black border-none hover:text-white mt-3">Ajouter un plat</label>
+            </div>
+
+            <?php
+            $types_non_vides = array();
+
+            foreach ($resto_a_modifier['plats'] as $p) {
+                if (!in_array($p['type']['nom'], $types_non_vides))
+                    array_push($types_non_vides, $p['type']['nom']);
+            }
+            ?>
+
+            <?php foreach ($types_non_vides as $tnv) : ?>
+                <div class="p-7 lg:mx-16">
+                    <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
+                    <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
+                        <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
+                            <?php if ($p['type']['nom'] == $tnv) : ?>
+                                <?php include('platcard.php'); ?>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+
+            <form method="post">
+                <input type="checkbox" id="ajout-plat" class="modal-toggle" />
+                <div class="modal">
+                    <div class="modal-box flex flex-col gap-2">
+                        <h3 class="font-bold text-lg">Ajouter un plat</h3>
+                        <div>
+                            <label for="nom_plat" class="label">
+                                <span class="label-text">Nom du plat</span>
+                            </label>
+                            <input type="text" name="nom_plat" placeholder="Steak frites" class="input input-bordered bg-slate-100 w-full" required />
+                        </div>
+                        <div>
+                            <label for="prix_plat" class="label">
+                                <span class="label-text">Prix du plat</span>
+                                <span class="label-text">en €</span>
+                            </label>
+                            <input type="number" name="prix_plat" placeholder="4,99" class="input input-bordered bg-slate-100 w-full" required min="1" max="20" step=".01" />
+                        </div>
+                        <div>
+                            <label for="image_plat" class="label">
+                                <span class="label-text">URL d'une image du plat</span>
+                            </label>
+                            <input type="url" name="image_plat" placeholder="https://google.com/image.jpg" class="input input-bordered bg-slate-100 w-full" required />
+                        </div>
+                        <select class="select select-bordered w-full max-w-xs mt-5" required>
+                            <option disabled selected value="">Quel est le type du plat ?</option>
+                            <?php foreach ($types as $t) : ?>
+                                <option><?php echo $t['nom_type']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="modal-action">
+                            <label for="ajout-plat" class="btn btn-ghost">Annuler</label>
+                            <button class="btn">Ajouter</button>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+            </form>
 
         <?php endif; ?>
 

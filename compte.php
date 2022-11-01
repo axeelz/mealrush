@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false) {
     header("location: index.php");
-    exit;
+    exit();
 }
 
 include 'ouvrirconnexion.php';
@@ -534,7 +534,7 @@ if (isset($_POST['modifier']) && isset($conn)) {
                             </div>
                             <input type="text" value="<?php echo $_SESSION['email'] ?>" name="update_email" class="text-center input input-bordered bg-slate-100 w-full" />
                             <div class="card-actions">
-                                <button name="modifier" class="btn btn-neutral mt-5 gap-2">
+                                <button name="modifier" class="btn btn-success mt-5 gap-2">
                                     Enregistrer
                                     <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>

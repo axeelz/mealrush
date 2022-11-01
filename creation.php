@@ -2,7 +2,7 @@
 session_start();
 if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     header("location: index.php");
-    exit;
+    exit();
 }
 
 include 'ouvrirconnexion.php';
@@ -141,8 +141,8 @@ if (isset($_POST['signup']) && isset($conn)) {
         } else {
             $_SESSION['successMessage'] = "Compte crée";
             header('location: compte.php');
+            exit();
         }
-        exit();
     } while (0);
 }
 ?>

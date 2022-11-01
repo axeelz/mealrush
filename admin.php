@@ -4,7 +4,7 @@ session_start();
 // Page réservée aux admins
 if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION['role'] != 'admin') {
     header("location: index.php");
-    exit;
+    exit();
 }
 
 include 'ouvrirconnexion.php';
