@@ -10,6 +10,29 @@ include 'ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
+
+    $id_utilisateur = $_SESSION['id_utilisateur'];
+
+    // Récupérer les adresses
+    $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur'";
+    $veutAjouterAdresse = isset($_GET['ajouteradresse']);
+    $result = mysqli_query($conn, $query);
+    $count = mysqli_num_rows($result);
+
+    // Si l'utilisateur n'a pas d'adresse
+    if ($count == 0) {
+        $hasAdresse = false;
+    } else {
+        $hasAdresse = true;
+        $_SESSION['adresses'] = array();
+
+        $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
+        $result = mysqli_query($conn, $query);
+        $count = mysqli_num_rows($result);
+        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+        }
+    }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
 }
@@ -54,6 +77,20 @@ try {
         ?>
 
         <h2 class="text-3xl font-bold mb-5">Livraison de <?php echo implode(", ", $restos_livraison) ?></h2>
+
+        <?php if ($isConnecte) : ?>
+            <?php if ($hasAdresse) : ?>
+                <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
+                    Destination ->
+                    <a class="text-sm text-opacity-80 font-normal ml-1 link" href="compte.php?selection=1#ouvrir-adresses"><?php echo $_SESSION['adresses'][0] ?></a>
+                </div>
+            <?php else : ?>
+                <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
+                    Destination ->
+                    <a class="text-sm text-opacity-80 font-normal ml-1 link text-error" href="compte.php?ajouteradresse=1">Vous n'avez pas encore défini d'adresse</a>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
 
         <!-- TODO
         Adresse

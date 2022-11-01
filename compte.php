@@ -594,11 +594,11 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
             <?php endforeach; ?>
             <div class="modal-action">
                 <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
-                <!-- Si on vient ici depuis la page d'accueil, on renvoie vers cette dernière au lieu de rester sur la page de compte -->
+                <!-- Si on vient ici depuis le sélecteur d'adresse, on renvoie vers la page confirmation au lieu de rester sur la page de compte -->
                 <?php if (empty($_GET['selection'])) : ?>
                     <a href="#" class="btn">Terminé</a>
                 <?php else : ?>
-                    <a href="index.php#adresse" class="btn">Terminé</a>
+                    <a href="recapitulatif.php" class="btn">Terminé</a>
                 <?php endif; ?>
             </div>
         </div>

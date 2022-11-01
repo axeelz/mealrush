@@ -88,25 +88,6 @@ try {
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
 
-    <!-- <?php // if ($isConnecte) : 
-            ?>
-        <?php // if ($hasAdresse) : 
-        ?>
-            <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
-                Livraison ->
-                <a class="text-sm text-opacity-80 font-normal ml-1 link" href="compte.php?selection=1#ouvrir-adresses">5 rue de Rivoli</a>
-            </div>
-        <?php // else : 
-        ?>
-            <div class="p-3 w-full text-sm font-bold text-center" id="adresse">
-                Livraison ->
-                <a class="text-sm text-opacity-80 font-normal ml-1 link text-error" href="compte.php">Vous n'avez pas encore défini d'adresse</a>
-            </div>
-        <?php // endif; 
-        ?>
-    <?php // endif; 
-    ?> -->
-
     <div class="hero">
         <div class="hero-content flex-col lg:flex-row">
             <img src="<?php echo $r['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
