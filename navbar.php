@@ -137,7 +137,7 @@ if (isset($_POST['moins1'])) {
         on a besoin d'actualiser la page pour metre a jour les informations du panier.
         Pour pas que l'utilisateur ait à rouvrir le panier, on l'ouvre par défaut
         avec la classe dropdown-open -->
-        <div class="dropdown dropdown-end <?php if ($_SESSION['forcerPanierOuvert'] && basename($_SERVER['PHP_SELF']) == "restaurants.php") echo "dropdown-open"; ?>" id="dropdown-panier">
+        <div class="dropdown dropdown-end <?php if ($_SESSION['forcerPanierOuvert'] && basename($_SERVER['PHP_SELF']) != "recapitulatif.php") echo "dropdown-open"; ?>" id="dropdown-panier">
             <?php unset($_SESSION['forcerPanierOuvert']); ?>
             <script>
                 // Si le panier a été ouvert par défaut au chargement de la page

@@ -133,6 +133,30 @@ if (isset($_POST['modifier']) && isset($conn)) {
         }
     } while (0);
 }
+
+if (isset($_POST['devenir_restaurateur']) && isset($conn)) {
+    $query = "UPDATE utilisateurs SET role='restaurateur' WHERE id='$id_utilisateur'";
+
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['role'] = 'restaurateur';
+        $_SESSION['successMessage'] = "Vous êtes maintenant restaurateur";
+        header("location: restaurateur.php?nouveaurestaurateur=1");
+        exit();
+    } else {
+        array_push($erreurs, mysqli_error($conn));
+    }
+}
+
+if (isset($_POST['devenir_user']) && isset($conn)) {
+    $query = "UPDATE utilisateurs SET role='utilisateur' WHERE id='$id_utilisateur'";
+
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['role'] = 'utilisateur';
+        array_push($succes, "Vous êtes maintenant utilisateur");
+    } else {
+        array_push($erreurs, mysqli_error($conn));
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -444,7 +468,7 @@ if (isset($_POST['modifier']) && isset($conn)) {
                         <?php if ($_GET['source'] == 'creation') : ?>
                             <a class="btn btn-block btn-ghost border-black mt-5" href="index.php">Plus tard</a>
                         <?php else : ?>
-                            <a class="btn btn-block btn-ghost border-black mt-5" href="index.php">Annuler</a>
+                            <a class="btn btn-block btn-ghost border-black mt-5" href="compte.php">Annuler</a>
                         <?php endif; ?>
                         <button class="btn btn-block btn-neutral mt-5" name="setadress">Valider</button>
                     </div>
@@ -462,23 +486,37 @@ if (isset($_POST['modifier']) && isset($conn)) {
 
                 <div class="card w-fit min-w-[40%] shadow-md my-10 mx-auto">
 
-                    <div class="avatar placeholder mx-auto mt-5">
+                    <div class="avatar placeholder mx-auto mt-2">
                         <div class="bg-neutral-focus text-neutral-content rounded-full w-24">
                             <!-- On récupère la première lettre du prenom pour l'avatar -->
                             <span class="text-3xl uppercase"><?php echo mb_substr($_SESSION['prenom'], 0, 1); ?></span>
                         </div>
                     </div>
-                    <div class="card-body items-center text-center">
+                    <div class="card-body items-center text-center p-3">
                         <h2 class="card-title"><?php echo $_SESSION['prenom'] . " " . $_SESSION['nom']; ?></h2>
                         <p><?php echo $_SESSION['email'] ?></p>
-                        <div class="card-actions justify-center">
-                            <a class="btn btn-ghost" href="#ouvrir-adresses">Adresses</a>
-                            <a class="btn btn-ghost" href="#ouvrir-moyens-de-paiement">Moyens de paiement</a>
+                        <div class="w-full p-5 flex flex-col gap-3">
+                            <div class="card-actions justify-center">
+                                <a class="btn btn-wide" href="?modification=1">Modifier mes informations</a>
+                            </div>
+                            <div>
+                                <div class="card-actions justify-center">
+                                    <a class="btn btn-ghost border-gray" href="#ouvrir-adresses">Mes adresses</a>
+                                    <a class="btn btn-ghost border-gray" href="#ouvrir-moyens-de-paiement">Moyens de paiement</a>
+                                </div>
+                            </div>
+                            <div class="divider mb-0"></div>
+                            <form method="post">
+                                <div class="card-actions justify-center">
+                                    <?php if ($isRestaurateur) : ?>
+                                        <button class="btn btn-ghost" name="devenir_user" onClick="return confirm('Voulez-vous vraiment ne plus être restaurateur ?');">Ne plus être restaurateur</button>
+                                    <?php else : ?>
+                                        <button class="btn btn-ghost" name="devenir_restaurateur" onClick="return confirm('Voulez-vous vraiment devenir restaurateur ?');">Devenir restaurateur</button>
+                                    <?php endif; ?>
+                                    <button class="btn btn-ghost text-error" name="supprimer_user" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer votre compte ?');">Supprimer mon compte</button>
+                                </div>
+                            </form>
                         </div>
-                        <a class="btn btn-neutral" href="?modification=1">Modifier les informations</a>
-                        <form method="post">
-                            <button class="btn btn-ghost text-error" name="supprimer_user" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer votre compte ?');">Supprimer le compte</button>
-                        </form>
                     </div>
 
                     <div class="stats">
@@ -528,7 +566,7 @@ if (isset($_POST['modifier']) && isset($conn)) {
                             </div>
                             <input type="text" value="<?php echo $_SESSION['email'] ?>" name="update_email" class="text-center input input-bordered bg-slate-100 w-full" />
                             <div class="card-actions">
-                                <button name="modifier" class="btn btn-success mt-5 gap-2">
+                                <button name="modifier" class="btn btn-success btn-wide mt-5 gap-2">
                                     Enregistrer
                                     <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>

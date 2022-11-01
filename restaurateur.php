@@ -359,7 +359,7 @@ try {
                 <div class="hero-overlay bg-opacity-80"></div>
                 <div class="hero-content flex-col lg:flex-row-reverse gap-6 my-5 lg:m-0">
                     <div class="text-center lg:text-left text-white max-w-md">
-                        <?php if ($veutAjouterRestaurant) : ?>
+                        <?php if ($veutAjouterRestaurant || isset($_GET['nouveaurestaurateur'])) : ?>
                             <h1 class="text-5xl font-bold">Développons votre restaurant</h1>
                         <?php else : ?>
                             <h1 class="text-5xl font-bold">Aucun restaurant enregistré</h1>
