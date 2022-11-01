@@ -13,6 +13,7 @@ try {
     $id_utilisateur = $_SESSION['id_utilisateur'];
 
     $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur'";
+    $veutAjouterAdresse = isset($_GET['ajouteradresse']);
     $result = mysqli_query($conn, $query);
     $count = mysqli_num_rows($result);
 
@@ -21,18 +22,14 @@ try {
         $hasAdresse = false;
     } else {
         $hasAdresse = true;
-        $adresses = array();
+        $_SESSION['adresses'] = array();
 
         $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
         $result = mysqli_query($conn, $query);
         $count = mysqli_num_rows($result);
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            array_push($adresses, $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+            array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
         }
-    }
-
-    if (isset($_POST['addadress'])) {
-        $veutAjouterAdresse = true;
     }
 } catch (\Throwable $th) {
     array_push($erreurs, $th->getMessage());
@@ -157,21 +154,15 @@ if (isset($_POST['modifier']) && isset($conn)) {
     <?php include('navbar.php'); ?>
 
     <!-- Formulaire d'ajoutr d'adresse -->
-    <?php if (!$hasAdresse || $veutAjouterAdresse) : ?>
+    <?php if ($veutAjouterAdresse) : ?>
 
         <div class="flex align-middle justify-center">
             <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3">
                 <img src="img/logo-blanc.png" alt="" class="w-64 mx-auto">
                 <div class="divider"></div>
-                <?php if ($veutAjouterAdresse) : ?>
-                    <h1 class="text-xl font-bold md:text-2xl mb-5">
-                        Ajouter une adresse
-                    </h1>
-                <?php else : ?>
-                    <h1 class="text-xl font-bold md:text-2xl mb-5">
-                        Finalisez la configuration de votre compte
-                    </h1>
-                <?php endif; ?>
+                <h1 class="text-xl font-bold md:text-2xl mb-5">
+                    Ajouter une adresse de livraison
+                </h1>
                 <form class="form-control w-full max-w-xs md:max-w-md gap-5" method="post">
                     <div class="grid grid-cols-2 gap-4">
                         <div id="row-1">
@@ -201,8 +192,8 @@ if (isset($_POST['modifier']) && isset($conn)) {
                             <input type="text" name="postal" id="postal" placeholder="75001" class="input input-bordered bg-slate-100 w-full" required />
                         </div>
                     </div>
-                    <!-- Sélection du pays -->
-                    <select class="select select-bordered w-full" name="pays">
+                    <p class="text-slate-600">Nous ne livrons qu'en France pour l'instant</p>
+                    <select disabled class="select select-bordered w-full" name="pays">
                         <option value="Afghanistan">Afghanistan</option>
                         <option value="Åland Islands">Åland Islands</option>
                         <option value="Albania">Albania</option>
@@ -449,8 +440,11 @@ if (isset($_POST['modifier']) && isset($conn)) {
                         <option value="Zimbabwe">Zimbabwe</option>
                     </select>
                     <div class="gap-0">
-                        <?php if ($veutAjouterAdresse) : ?>
-                            <a class="btn btn-block btn-ghost border-black mt-5" href="compte.php">Annuler</a>
+                        <!-- Si on provient de la page de création de compte, on propose de passer et non d'annuler -->
+                        <?php if ($_GET['source'] == 'creation') : ?>
+                            <a class="btn btn-block btn-ghost border-black mt-5" href="index.php">Plus tard</a>
+                        <?php else : ?>
+                            <a class="btn btn-block btn-ghost border-black mt-5" href="index.php">Annuler</a>
                         <?php endif; ?>
                         <button class="btn btn-block btn-neutral mt-5" name="setadress">Valider</button>
                     </div>
@@ -462,7 +456,7 @@ if (isset($_POST['modifier']) && isset($conn)) {
 
 
         <div class="mx-auto p-10">
-            <h1 class="text-2xl font-bold md:text-3xl text-center">Ravis de vous revoir, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
+            <h1 class="text-2xl font-bold md:text-3xl text-center">Ravis de vous voir, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
 
             <?php if (empty($_GET['modification'])) : ?>
 
@@ -555,15 +549,13 @@ if (isset($_POST['modifier']) && isset($conn)) {
     <div class="modal" id="ouvrir-adresses">
         <div class="modal-box text-center">
             <h3 class="font-bold text-lg mb-5">Adresses enregistrées</h3>
-            <?php foreach ($adresses as $a) : ?>
+            <?php foreach ($_SESSION['adresses'] as $a) : ?>
                 <button class="btn btn-ghost gap-2">
                     <?php echo $a; ?>
                 </button>
             <?php endforeach; ?>
             <div class="modal-action">
-                <form method="post" action="compte.php">
-                    <button class="btn btn-ghost" name="addadress">Ajouter une adresse</button>
-                </form>
+                <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
                 <!-- Si on vient ici depuis la page d'accueil, on renvoie vers cette dernière au lieu de rester sur la page de compte -->
                 <?php if (empty($_GET['selection'])) : ?>
                     <a href="#" class="btn">Terminé</a>

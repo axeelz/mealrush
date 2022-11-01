@@ -140,7 +140,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             exit();
         } else {
             $_SESSION['successMessage'] = "Compte crée";
-            header('location: compte.php');
+            header('location: compte.php?ajouteradresse=1&source=creation');
             exit();
         }
     } while (0);
@@ -171,19 +171,19 @@ if (isset($_POST['signup']) && isset($conn)) {
             <h1 class="text-xl font-bold md:text-2xl mb-5">
                 Créer un compte
             </h1>
-            <form class="form-control w-full max-w-xs md:max-w-md" method="post">
+            <form class="form-control w-full max-w-xs md:max-w-md" method="post" autocomplete="new-password">
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div id="row-1">
                         <label for="prenom" class="label">
                             <span class="label-text">Votre prénom</span>
                         </label>
-                        <input type="text" name="prenom" id="prenom" placeholder="Bob" class="input input-bordered bg-slate-100 w-full" required />
+                        <input type="text" name="prenom" id="prenom" placeholder="Meal" class="input input-bordered bg-slate-100 w-full" required />
                     </div>
                     <div id="row-2">
                         <label for="nom" class="label">
                             <span class="label-text">Votre nom</span>
                         </label>
-                        <input type="text" name="nom" id="nom" placeholder="L'éponge" class="input input-bordered bg-slate-100 w-full" required />
+                        <input type="text" name="nom" id="nom" placeholder="Rush" class="input input-bordered bg-slate-100 w-full" required />
                     </div>
                 </div>
                 <label for="email" class="label">

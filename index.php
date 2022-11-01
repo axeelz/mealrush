@@ -90,20 +90,29 @@ try {
 
     <?php if (empty($_GET['tag'])) : ?>
 
-        <div class="hero min-h-fit" style="background-image: url(img/main-hero.jpeg);">
-            <div class="hero-overlay bg-opacity-70"></div>
-            <div class="hero-content text-center text-neutral-content flex-col">
-                <img src="img/logo.png" class="w-72 rounded-lg shadow-2xl mb-3" />
-                <div class="max-w-md">
-                    <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
-                    <p class="py-6">
-                        Recevez votre plat sur le pas de votre porte en un rien de temps avec MealRush.
-                    </p>
-                    <a class="btn bg-white text-black hover:text-white" href="#restos-container">On mange quoi ?</a>
-                    <!-- <a class="btn bg-blue text-black hover:text-white ml-1" href="connexion.php">Se connecter</a> -->
+        <?php if (!$isConnecte) : ?>
+            <div class="hero min-h-fit" id="main-hero">
+                <div class="hero-overlay bg-opacity-70"></div>
+                <div class="hero-content text-center text-neutral-content flex-col">
+                    <img src="img/logo.png" class="w-72 rounded-lg shadow-2xl mb-3" />
+                    <div class="max-w-md">
+                        <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
+                        <p class="py-6">
+                            Recevez votre plat sur le pas de votre porte en un rien de temps avec MealRush.
+                        </p>
+                        <a class="btn bg-white text-black hover:text-white" href="#restos-container">On mange quoi ?</a>
+                        <a class="btn bg-blue text-black hover:text-white ml-1" href="connexion.php">Se connecter</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php else : ?>
+            <div class="hero min-h-fit" id="main-hero">
+                <div class="hero-overlay bg-opacity-70"></div>
+                <div class="hero-content text-center text-neutral-content flex-col">
+                    <img src="img/logo.png" class="w-56 rounded-lg shadow-2xl" />
+                </div>
+            </div>
+        <?php endif; ?>
 
         <div class="p-7 lg:mx-16" id="restos-container">
             <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Tous les restaurants</h2>
@@ -199,6 +208,20 @@ try {
     <?php endif; ?>
 
     <?php include('footer.php'); ?>
+
+    <script>
+        // Changer l'image de fond aléatoirement
+
+        const hero = document.getElementById("main-hero");
+
+        const images = [
+            "img/hero-burgers.jpeg",
+            "img/hero-sushi.jpeg",
+            "img/hero-nouilles.jpeg"
+        ]
+
+        hero.style.backgroundImage = "url(" + images[Math.floor(Math.random() * images.length)] + ")";
+    </script>
 
 </body>
 

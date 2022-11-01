@@ -1749,6 +1749,27 @@ html {
   outline-offset: 2px;
 }
 
+.btn-primary {
+  --tw-border-opacity: 1;
+  border-color: hsl(var(--p) / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: hsl(var(--p) / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: hsl(var(--pc) / var(--tw-text-opacity));
+}
+
+.btn-primary:hover, 
+    .btn-primary.btn-active {
+  --tw-border-opacity: 1;
+  border-color: hsl(var(--pf, var(--p)) / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: hsl(var(--pf, var(--p)) / var(--tw-bg-opacity));
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid hsl(var(--p));
+}
+
 .btn-success {
   --tw-border-opacity: 1;
   border-color: hsl(var(--su) / var(--tw-border-opacity));
@@ -2169,6 +2190,10 @@ body[dir="rtl"] .checkbox:checked,
 
 .divider:not(:empty) {
   gap: 1rem;
+}
+
+.drawer-toggle:focus-visible ~ .drawer-content .drawer-button.btn-primary {
+  outline: 2px solid hsl(var(--p));
 }
 
 .drawer-toggle:focus-visible ~ .drawer-content .drawer-button.btn-success {
@@ -3394,6 +3419,10 @@ body[dir="rtl"] .checkbox:checked,
   width: 50%;
 }
 
+.w-56 {
+  width: 14rem;
+}
+
 .min-w-\[40\%\] {
   min-width: 40%;
 }
@@ -3544,6 +3573,10 @@ body[dir="rtl"] .checkbox:checked,
 
 .border-2 {
   border-width: 2px;
+}
+
+.border-t {
+  border-top-width: 1px;
 }
 
 .border-none {
@@ -3789,6 +3822,10 @@ body[dir="rtl"] .checkbox:checked,
 
 .text-opacity-80 {
   --tw-text-opacity: 0.8;
+}
+
+.text-opacity-60 {
+  --tw-text-opacity: 0.6;
 }
 
 .shadow-lg {

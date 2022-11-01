@@ -33,7 +33,7 @@ try {
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
 
-    <div class="p-7 lg:mx-16 flex flex-col justify-center items-center" id="container">
+    <div class="p-7 lg:mx-16 flex flex-col justify-center items-center container">
 
         <ul class="steps mx-auto w-1/2">
             <li class="step step-primary">Choix</li>

@@ -1,0 +1,7 @@
+# On masque les config des modules (Tailwind...)
+node_modules
+package-lock.json
+package.json
+tailwind.config.js
+.DS_Store
+img/assets
