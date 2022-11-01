@@ -480,7 +480,22 @@ try {
             <form method="post">
                 <div class="hero">
                     <div class="hero-content flex-col lg:flex-row">
-                        <img src="<?php echo $resto_a_modifier['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+                        <div>
+                            <img src="<?php echo $resto_a_modifier['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+                            <div class="stats shadow mt-5">
+
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">Commandes</div>
+                                    <div class="stat-value">0</div>
+                                </div>
+
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">Note</div>
+                                    <div class="stat-value">4.5</div>
+                                </div>
+
+                            </div>
+                        </div>
                         <div>
                             <input type="text" value="<?php echo $resto_a_modifier['nom'] ?>" name="update_nom" class="text-5xl font-bold mb-2 input input-lg input-bordered bg-slate-100 w-full" />
                             <div tabindex="0" class="collapse collapse-arrow border border-base-300 rounded-box my-2 max-h-56 overflow-scroll">

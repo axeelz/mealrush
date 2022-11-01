@@ -3885,6 +3885,11 @@ body[dir="rtl"] .checkbox:checked,
   color: rgb(199 245 254 / var(--tw-text-opacity));
 }
 
+.text-secondary {
+  --tw-text-opacity: 1;
+  color: hsl(var(--s) / var(--tw-text-opacity));
+}
+
 .text-opacity-80 {
   --tw-text-opacity: 0.8;
 }
