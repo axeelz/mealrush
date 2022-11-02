@@ -59,7 +59,7 @@ try {
     <div class="p-7 lg:mx-16 flex flex-col justify-center items-center container">
 
         <ul class="steps mx-auto w-1/2">
-            <li class="step step-primary">Choix</li>
+            <li class="step step-primary"><a href="index.php#restos-container">Choix</a></li>
             <li class="step step-primary">Récapitulatif</li>
             <li class="step">Paiement</li>
             <li class="step">Livraison</li>
