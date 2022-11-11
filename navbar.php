@@ -126,7 +126,7 @@ if (isset($_POST['moins1'])) {
     </div>
     <div class="flex-none">
         <div class="form-control hidden md:block">
-            <input type="text" placeholder="Chercher un restaurant" class="input input-bordered" />
+            <input type="text" placeholder="Chercher un restaurant" class="input input-bordered h-10" />
         </div>
         <button class="btn btn-ghost btn-circle ml-2 hidden md:flex">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

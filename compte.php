@@ -43,16 +43,16 @@ if (isset($_POST['setadress']) && isset($conn)) {
         $numero = mysqli_real_escape_string($conn, htmlspecialchars($_POST['numero']));
         $ville = mysqli_real_escape_string($conn, htmlspecialchars($_POST['ville']));
         $code_postal = mysqli_real_escape_string($conn, htmlspecialchars($_POST['postal']));
-        $pays = mysqli_real_escape_string($conn, htmlspecialchars($_POST['pays']));
+        // $pays = mysqli_real_escape_string($conn, htmlspecialchars($_POST['pays']));
 
-        if (empty($rue) || empty($numero) || empty($ville) || empty($code_postal) || empty($pays)) {
+        if (empty($rue) || empty($numero) || empty($ville) || empty($code_postal)) {
             array_push($erreurs, "Un des champs requis est vide");
             break;
         }
 
         // Insertion d'une nouvelle adresse
         // Il faudrait vérifier si l'adresse existe pas déjà et récuperer simplement son id ?
-        $query = "INSERT INTO `adresses` (`rue`, `numero`, `ville`, `code_postal`, `pays`) VALUES ('$rue', '$numero', '$ville', '$code_postal', '$pays')";
+        $query = "INSERT INTO `adresses` (`rue`, `numero`, `ville`, `code_postal`, `pays`) VALUES ('$rue', '$numero', '$ville', '$code_postal', 'France')";
         if (mysqli_query($conn, $query)) {
             $id_adresse = mysqli_insert_id($conn);
         } else {
@@ -72,8 +72,13 @@ if (isset($_POST['setadress']) && isset($conn)) {
             FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Adresse ajoutée à votre compte";
-            header('location: ' . $_SERVER['PHP_SELF']);
-            exit();
+            if ($_GET['source'] == 'recapitulatif') {
+                header('location: recapitulatif.php');
+                exit();
+            } else {
+                header('location: ' . $_SERVER['PHP_SELF']);
+                exit();
+            }
         } else {
             array_push($erreurs, mysqli_error($conn));
             break;
@@ -467,9 +472,12 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
                         <!-- Si on provient de la page de création de compte, on propose de passer et non d'annuler -->
                         <?php if ($_GET['source'] == 'creation') : ?>
                             <a class="btn btn-block btn-ghost border-black mt-5" href="index.php">Plus tard</a>
+                        <?php elseif ($_GET['source'] == 'recapitulatif') : ?>
+                            <a class="btn btn-block btn-ghost border-black mt-5" href="recapitulatif.php">Annuler</a>
                         <?php else : ?>
                             <a class="btn btn-block btn-ghost border-black mt-5" href="compte.php">Annuler</a>
                         <?php endif; ?>
+
                         <button class="btn btn-block btn-neutral mt-5" name="setadress">Valider</button>
                     </div>
                 </form>
@@ -588,9 +596,16 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
         <div class="modal-box text-center">
             <h3 class="font-bold text-lg mb-5">Adresses enregistrées</h3>
             <?php foreach ($_SESSION['adresses'] as $a) : ?>
-                <button class="btn btn-ghost gap-2">
-                    <?php echo $a; ?>
-                </button>
+                <div class="flex justify-between items-center gap-4">
+                    <span class="flex items-center h-12 font-semibold text-sm whitespace-nowrap overflow-scroll max-w-full">
+                        <?php echo $a; ?>
+                    </span>
+                    <button class="btn btn-circle btn-outline btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             <?php endforeach; ?>
             <div class="modal-action">
                 <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
