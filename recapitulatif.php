@@ -70,6 +70,8 @@ if (isset($_POST['payer']) && isset($conn)) {
 
 if (isset($_POST['finaliser'])) {
     $finalisationCommande = true;
+    $itemsPayes = $_SESSION['panier']['items'];
+    // unset($_SESSION['panier']);
 }
 ?>
 
@@ -108,7 +110,7 @@ if (isset($_POST['finaliser'])) {
 
         <div class="flex items-center justify-center min-h-[50vh] mb-5">
             <div class="radial-progress animate-spin" style="--value:60;" id="spin"></div>
-            <div class="hidden" id="check" style="opacity: 1; transition: opacity 1s;">
+            <div class="hidden opacity-100 transition-opacity duration-1000" id="check">
                 <svg xmlns="http://www.w3.org/2000/svg" class="rotate-center stroke-success flex-shrink-0 h-24 w-24" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -138,7 +140,104 @@ if (isset($_POST['finaliser'])) {
 
     <?php elseif ($finalisationCommande) : ?>
 
-        <h1 class="text-2xl text-center">Merci d'avoir commandé chez MealRush...</h1>
+        <div>
+
+            <h1 class="text-2xl text-center">Merci d'avoir commandé chez MealRush&nbsp;!</h1>
+
+            <div class="p-2 rounded-box mx-auto w-fit grid grid-flow-col gap-5 text-center auto-cols-max items-center" id="delivery-container">
+                <span>Livraison estimée dans</span>
+                <div class="flex gap-5 opacity-0 transition-all duration-500" id="countdown-container">
+                    <div>
+                        <span class="countdown text-3xl">
+                            <span style="--value: 30;" id="min"></span>
+                        </span>
+                        min
+                    </div>
+                    <div>
+                        <span class="countdown text-3xl">
+                            <span style="--value: 00;" id="sec"></span>
+                        </span>
+                        sec
+                    </div>
+                </div>
+            </div>
+            <script>
+                // On génère un temps de livraison aléatoire entre 10 et 30 minutes, puis on fais le compte à rebours
+                var countDownDate = new Date().getTime() + (Math.random() * (30 - 10) + 10) * 60 * 1000;
+                const jsConfetti = new JSConfetti();
+
+                var x = setInterval(function() {
+                    if (document.getElementById("countdown-container").classList.contains("opacity-0")) {
+                        document.getElementById("countdown-container").classList.remove("opacity-0");
+                        document.getElementById("countdown-container").classList.add("opacity-100");
+                    }
+
+                    var now = new Date().getTime();
+
+                    var distance = countDownDate - now;
+
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById("min").style.setProperty('--value', minutes);
+                    document.getElementById("sec").style.setProperty('--value', seconds);
+
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("delivery-container").innerHTML = "Rendez vous à votre porte";
+                        jsConfetti.addConfetti();
+                    }
+                }, 1000);
+            </script>
+
+            <div class="min-h-[50vh] max-w-xs mx-auto shadow-lg p-5 my-10 flex flex-1 flex-col rounded-lg">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto stroke-success flex-shrink-0 h-12 w-12" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="mt-3 mb-5 text-center">
+                    <h2 class="text-xl font-bold">Commande confirmée&nbsp;!</h2>
+                    <p>Le <?php echo date("d/m/Y"); ?></p>
+                </div>
+                <?php // foreach ($itemsPayes as $i) : 
+                ?>
+                <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
+                    <div class="flex justify-between p-3">
+                        <div>
+                            <span class="badge badge-xl badge-outline"><?php echo $i['quantite']; ?></span>
+                            <?php echo $i['nom']; ?>
+                        </div>
+                        <div>
+                            <?php echo str_replace(".", ",", $i['prix'] * $i['quantite']); ?>€
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                <div class="flex justify-between p-3">
+                    <div>
+                        Frais
+                    </div>
+                    <div>
+                        <?php echo str_replace(".", ",", $_SESSION['panier']['prix_final'] - $_SESSION['panier']['prix_total']); ?>€
+                    </div>
+                </div>
+                <div class="flex justify-between p-3 mt-auto text-xl">
+                    <div class="">
+                        Total
+                    </div>
+                    <div>
+                        <?php echo str_replace(".", ",", $_SESSION['panier']['prix_final']); ?>€
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            // window.onbeforeunload = function() {
+            //     return "Si vous quittez cette page, vous ne pourrez plus suivre votre commande, continuer ?";
+            // };
+        </script>
 
     <?php else : ?>
 
