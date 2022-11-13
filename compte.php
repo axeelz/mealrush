@@ -221,7 +221,7 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
                             <input type="text" name="postal" id="postal" placeholder="75001" class="input input-bordered bg-slate-100 w-full" required />
                         </div>
                     </div>
-                    <p class="text-slate-600">Nous ne livrons qu'en France pour l'instant</p>
+                    <p class="opacity-60">Nous ne livrons qu'en France pour l'instant</p>
                     <select disabled class="select select-bordered w-full" name="pays">
                         <option value="Afghanistan">Afghanistan</option>
                         <option value="Åland Islands">Åland Islands</option>
