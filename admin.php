@@ -243,6 +243,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
         </div>
     </div>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
 </body>

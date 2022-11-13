@@ -375,6 +375,7 @@ if (isset($_POST['finaliser'])) {
 
     <?php endif; ?>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
 </body>

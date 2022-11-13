@@ -188,6 +188,7 @@ try {
 
     <?php endif; ?>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
     <script>

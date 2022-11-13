@@ -113,6 +113,7 @@ if (isset($_POST['login'])) {
         </div>
     </div>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
 </body>

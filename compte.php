@@ -590,6 +590,7 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
 
     <?php endif; ?>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
     <div class="modal" id="ouvrir-adresses">

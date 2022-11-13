@@ -149,6 +149,7 @@ try {
         </div>
     <?php endforeach; ?>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
 </body>

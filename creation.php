@@ -287,6 +287,7 @@ if (isset($_POST['signup']) && isset($conn)) {
         </div>
     </div>
 
+    <!-- Footer -->
     <?php include('footer.php'); ?>
 
 </body>
