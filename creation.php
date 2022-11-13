@@ -134,6 +134,15 @@ if (isset($_POST['signup']) && isset($conn)) {
         $_SESSION['id_utilisateur'] = $id_utilisateur;
         $_SESSION['creation'] = $creation;
 
+        // Si l'utilisateur se crée un compte au moment de payer sa commande, on le renvoie directement
+        // vers sa commande au lieu de vers la page d'accueil.
+        if ($_GET['source'] == 'recapitulatif') {
+            $_SESSION['successMessage'] = "Compte crée";
+            header('location: recapitulatif.php');
+            exit();
+        }
+
+        // S'il se crée un compte depuis une autre page...
         if ($role == 'restaurateur') {
             $_SESSION['successMessage'] = "Compte et restaurant crées";
             header('location: restaurateur.php');

@@ -52,7 +52,15 @@ if (isset($_POST['login'])) {
             $_SESSION['creation'] = $creation;
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Bienvenue, " . $_SESSION['prenom'] . " " . $_SESSION['nom'];
-            header('location: index.php');
+
+            // Si l'utilisateur se crée un compte au moment de payer sa commande, on le renvoie directement
+            // vers sa commande au lieu de vers la page d'accueil.
+            if ($_GET['source'] == 'recapitulatif') {
+                header('location: recapitulatif.php');
+            } else {
+                header('location: index.php');
+            }
+
             exit();
         } else {
             // Mot de passe invalide (mais on le dit pas)
@@ -107,7 +115,11 @@ if (isset($_POST['login'])) {
                     });
                 </script>
                 <p>Pas encore de compte ?
-                    <a href="creation.php" class="link font-bold">Créez en un !</a>
+                    <?php if ($_GET['source'] == 'recapitulatif') : ?>
+                        <a href="creation.php?source=recapitulatif" class="link font-bold">Créez en un !</a>
+                    <?php else : ?>
+                        <a href="creation.php" class="link font-bold">Créez en un !</a>
+                    <?php endif; ?>
                 </p>
             </form>
         </div>

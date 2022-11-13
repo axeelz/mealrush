@@ -11,31 +11,35 @@ try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
 
-    $id_utilisateur = $_SESSION['id_utilisateur'];
-
     $codes_promo = array(
         "BLACKFRIDAY22" => 20,
         "FREE" => 100,
     );
 
-    // Récupérer les adresses
-    $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur'";
-    $veutAjouterAdresse = isset($_GET['ajouteradresse']);
-    $result = mysqli_query($conn, $query);
-    $count = mysqli_num_rows($result);
+    // Si l'utilisateur est connecté, on affiche ses adresses
+    if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
 
-    // Si l'utilisateur n'a pas d'adresse
-    if ($count == 0) {
-        $hasAdresse = false;
-    } else {
-        $hasAdresse = true;
-        $_SESSION['adresses'] = array();
+        $id_utilisateur = $_SESSION['id_utilisateur'];
 
-        $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
+        // Récupérer les adresses
+        $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur'";
+        $veutAjouterAdresse = isset($_GET['ajouteradresse']);
         $result = mysqli_query($conn, $query);
         $count = mysqli_num_rows($result);
-        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+
+        // Si l'utilisateur n'a pas d'adresse
+        if ($count == 0) {
+            $hasAdresse = false;
+        } else {
+            $hasAdresse = true;
+            $_SESSION['adresses'] = array();
+
+            $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
+            $result = mysqli_query($conn, $query);
+            $count = mysqli_num_rows($result);
+            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+            }
         }
     }
 } catch (\Throwable $th) {
@@ -63,6 +67,11 @@ if (isset($_POST['payer']) && isset($conn)) {
     do {
         $adresse = mysqli_real_escape_string($conn, htmlspecialchars($_POST['adresse']));
         $instructions = mysqli_real_escape_string($conn, htmlspecialchars($_POST['instructions']));
+
+        if (!(isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) || empty($adresse)) {
+            array_push($erreurs, "Un des champs requis est vide");
+            break;
+        }
 
         $paiementEffectue = true;
     } while (0);
@@ -283,10 +292,19 @@ if (isset($_POST['finaliser'])) {
                                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>Vous n'avez pas défini d'adresse. <a class="font-bold ml-1" href="compte.php?ajouteradresse=1&source=recapitulatif">Ajouter</a></span>
+                                <span>Vous n'avez pas défini d'adresse. <a class="font-bold ml-1 hover:link" href="compte.php?ajouteradresse=1&source=recapitulatif">Ajouter</a></span>
                             </div>
                         </div>
                     <?php endif; ?>
+                <?php else : ?>
+                    <div class="alert alert-warning shadow-lg mx-auto w-2/3">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Pour passer commande, <a class="font-bold ml-1 hover:link" href="connexion.php?source=recapitulatif">connectez-vous</a></span>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
@@ -368,7 +386,7 @@ if (isset($_POST['finaliser'])) {
                 </div>
 
                 <form id="formulaire-payer" method="post">
-                    <button class="btn btn-block mt-2" name="payer" <?php if (!$hasAdresse) echo "disabled"; ?>>Payer <?php echo str_replace(".", ",", number_format(floatval($prix_total) * (1 - $pourcentage_remise / 100) + $frais_livraison, 2)); ?>€</button>
+                    <button class="btn btn-block mt-2" name="payer" <?php if (!$hasAdresse || !$isConnecte) echo "disabled"; ?>>Payer <?php echo str_replace(".", ",", number_format(floatval($prix_total) * (1 - $pourcentage_remise / 100) + $frais_livraison, 2)); ?>€</button>
                 </form>
             </div>
         </div>

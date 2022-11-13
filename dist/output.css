@@ -4100,9 +4100,28 @@ body[dir="rtl"] .checkbox:checked,
   margin-right: auto;
 }
 
+.hover\:link:hover {
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.hover\:link:hover:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.hover\:link:hover:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:underline:hover {
+  text-decoration-line: underline;
 }
 
 @media (min-width: 640px) {
