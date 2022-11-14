@@ -128,7 +128,7 @@ try {
                             <?php if ($c['terminee']) : ?>
                                 <td>
                                     <span class="badge badge-success">
-                                        Réceptionnée
+                                        Livrée
                                     </span>
                                 </td>
                             <?php else : ?>
@@ -136,23 +136,21 @@ try {
                                     <span class="badge badge-ghost">
                                         Livraison dans
                                         <span class="countdown ml-1">
-                                            <span style="--value: 30;" id="min"></span>
+                                            <span style="--value: 30;" id="min-<?php echo $c['id']; ?>"></span>
                                         </span>
                                         min
                                     </span>
                                 </td>
                                 <script>
                                     // On fait le compte à rebours entre maintenant et l'heure de livraison
-                                    var countDownDate = new Date("<?php echo $c['heure_livraison']; ?>").getTime();
-
-                                    var x = setInterval(function() {
+                                    setInterval(function() {
                                         var now = new Date().getTime();
 
-                                        var distance = countDownDate - now;
+                                        var distance = new Date("<?php echo $c['heure_livraison']; ?>").getTime() - now;
 
                                         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
-                                        document.getElementById("min").style.setProperty('--value', minutes);
+                                        document.getElementById("min-<?php echo $c['id']; ?>").style.setProperty('--value', minutes);
 
                                         if (distance < 0) {
                                             location.reload();
