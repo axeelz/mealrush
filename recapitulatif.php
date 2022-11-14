@@ -343,7 +343,7 @@ if (isset($_POST['finaliser'])) {
                         <tbody>
                             <tr>
                                 <th>Sous-total</th>
-                                <td class="text-end"><?php echo str_replace(".", ",", $prix_total); ?>€</td>
+                                <td class="text-end"><?php echo str_replace(".", ",", number_format(floatval($prix_total), 2)); ?>€</td>
                             </tr>
                             <?php if (isset($codePromo)) : ?>
                                 <tr>
