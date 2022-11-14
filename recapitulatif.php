@@ -119,7 +119,7 @@ if (isset($_POST['finaliser'])) {
     // On vide le panier de l'utilisateur et on redirige vers la page de suivi de commande
     unset($_SESSION['panier']);
 
-    header("location: finalisation.php");
+    header("location: suivi.php");
     exit();
 }
 ?>

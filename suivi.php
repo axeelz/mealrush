@@ -13,10 +13,23 @@ try {
 
     $id_utilisateur = $_SESSION['id_utilisateur'];
 
-    // On récupère la dernière commande de l'utilisateur
-    $query = "SELECT * FROM commandes WHERE id_utilisateur='$id_utilisateur' ORDER BY id DESC";
+    // Si on veut afficher les détails d'une commande en particulier (dont l'id est donné en paramètre d'URL)
+    if (isset($_GET['id'])) {
+        $id_commande = (int)$_GET['id'];
+        $query = "SELECT * FROM commandes WHERE id_utilisateur='$id_utilisateur' AND id='$id_commande' ORDER BY id DESC";
+    } else {
+        // Sinon, on récupère la dernière commande de l'utilisateur
+        $query = "SELECT * FROM commandes WHERE id_utilisateur='$id_utilisateur' ORDER BY id DESC";
+    }
+
     $result = mysqli_query($conn, $query);
     $row = mysqli_fetch_assoc($result);
+
+    // Si aucune commande correspondante trouvée
+    if ($row == false) {
+        header("location: commandes.php");
+        exit();
+    }
 
     // On récupère le panier de l'utilisateur
     $panier = json_decode($row['panier'], true);
