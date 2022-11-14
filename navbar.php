@@ -43,7 +43,7 @@ if (isset($_POST['ajouter_panier'])) {
                 'id' => $id_produit,
                 'prix' => $row['prix'],
                 'quantite' => 1,
-                'image' => $row['image'],
+                // pas besoin pour l'instant - 'image' => $row['image'],
                 'restaurant' => $row['rn']
             )
         );

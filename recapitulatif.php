@@ -34,11 +34,17 @@ try {
             $hasAdresse = true;
             $_SESSION['adresses'] = array();
 
-            $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
+            $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays, adresses.id FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
             $result = mysqli_query($conn, $query);
             $count = mysqli_num_rows($result);
             while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                array_push($_SESSION['adresses'], $row["numero"] . " " . $row["rue"] . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+                array_push(
+                    $_SESSION['adresses'],
+                    array(
+                        "id" => $row["id"],
+                        "format" => $row["numero"] . " " . $row["rue"] . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]
+                    )
+                );
             }
         }
     }
@@ -65,12 +71,44 @@ if (isset($_POST['code_promo'])) {
 
 if (isset($_POST['payer']) && isset($conn)) {
     do {
-        $adresse = mysqli_real_escape_string($conn, htmlspecialchars($_POST['adresse']));
+        $id_adresse = mysqli_real_escape_string($conn, htmlspecialchars((int)$_POST['adresse']));
         $instructions = mysqli_real_escape_string($conn, htmlspecialchars($_POST['instructions']));
+        $montant = $_SESSION['panier']['prix_final'];
 
-        if (!(isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) || empty($adresse)) {
+        $heure_livraison = date("Y/m/d H:i:s", strtotime("+" . rand(10, 30) . "minutes"));
+
+        if (!(isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) || empty($id_adresse)) {
             array_push($erreurs, "Un des champs requis est vide");
             break;
+        }
+
+        // On vérifie que l'id de l'adresse fait bien partie des adresses de l'utilisateur (pour empêcher d'inspecter l'élement)
+        foreach ($_SESSION['adresses'] as $a) {
+            if ($a['id'] == $id_adresse) {
+                // Insertion de la commande en base de donnée, avec le panier enregistré en json
+                $panier = json_encode($_SESSION['panier'], JSON_UNESCAPED_UNICODE);
+                $query = "INSERT INTO `commandes` (`montant`, `panier`,`id_utilisateur`, `id_adresse`, `livraison`) VALUES ('$montant', '$panier', '$id_utilisateur', '$id_adresse', '$heure_livraison')";
+                if (mysqli_query($conn, $query)) {
+                    // Sous-table commandes_plats -> méthode abandonnée car il est plus simple de stocker le panier en json dans la table commandes
+
+                    /* $id_commande = mysqli_insert_id($conn);
+                    foreach ($_SESSION['panier']['items'] as $i) {
+                        $quantite = $i['quantite'];
+                        $id = $i['id'];
+                        $insertion_plat = "INSERT INTO `commandes_plats` (`quantite`, `id_plat`, `id_commande`) VALUES ('$quantite', '$id', '$id_commande')";
+                        if (!mysqli_query($conn, $insertion_plat)) {
+                            array_push($erreurs, mysqli_error($conn));
+                            break;
+                        }
+                    } */
+
+                    $_SESSION['successMessage'] = "Commande enregistrée";
+                    break;
+                } else {
+                    array_push($erreurs, mysqli_error($conn));
+                    break;
+                }
+            }
         }
 
         $paiementEffectue = true;
@@ -78,9 +116,11 @@ if (isset($_POST['payer']) && isset($conn)) {
 }
 
 if (isset($_POST['finaliser'])) {
-    $finalisationCommande = true;
-    $itemsPayes = $_SESSION['panier']['items'];
-    // unset($_SESSION['panier']);
+    // On vide le panier de l'utilisateur et on redirige vers la page de suivi de commande
+    unset($_SESSION['panier']);
+
+    header("location: finalisation.php");
+    exit();
 }
 ?>
 
@@ -108,13 +148,14 @@ if (isset($_POST['finaliser'])) {
         <ul class="steps mx-auto sm:w-2/3 lg:w-1/2">
             <li class="step step-primary"><a href="index.php#restos-container">Choix</a></li>
             <li class="step step-primary">Récapitulatif</li>
-            <li class="step <?php if ($paiementEffectue || $finalisationCommande) echo 'step-primary'; ?>">Paiement</li>
-            <li class="step <?php if ($finalisationCommande) echo 'step-primary'; ?>">Livraison</li>
+            <li class="step <?php if ($paiementEffectue) echo 'step-primary'; ?>">Paiement</li>
+            <li class="step">Livraison</li>
         </ul>
     </div>
 
     <div class="divider"></div>
 
+    <!-- Page qui s'affiche lorsque l'utilisateur a cliqué sur payer sa commande -->
     <?php if ($paiementEffectue) : ?>
 
         <div class="flex items-center justify-center min-h-[50vh] mb-5">
@@ -147,107 +188,6 @@ if (isset($_POST['finaliser'])) {
             }, 2000);
         </script>
 
-    <?php elseif ($finalisationCommande) : ?>
-
-        <div>
-
-            <h1 class="text-2xl text-center">Merci d'avoir commandé chez MealRush&nbsp;!</h1>
-
-            <div class="p-2 rounded-box mx-auto w-fit grid grid-flow-col gap-5 text-center auto-cols-max items-center" id="delivery-container">
-                <span>Livraison estimée dans</span>
-                <div class="flex gap-5 opacity-0 transition-all duration-500" id="countdown-container">
-                    <div>
-                        <span class="countdown text-3xl">
-                            <span style="--value: 30;" id="min"></span>
-                        </span>
-                        min
-                    </div>
-                    <div>
-                        <span class="countdown text-3xl">
-                            <span style="--value: 00;" id="sec"></span>
-                        </span>
-                        sec
-                    </div>
-                </div>
-            </div>
-            <script>
-                // On génère un temps de livraison aléatoire entre 10 et 30 minutes, puis on fais le compte à rebours
-                var countDownDate = new Date().getTime() + (Math.random() * (30 - 10) + 10) * 60 * 1000;
-                const jsConfetti = new JSConfetti();
-
-                var x = setInterval(function() {
-                    if (document.getElementById("countdown-container").classList.contains("opacity-0")) {
-                        document.getElementById("countdown-container").classList.remove("opacity-0");
-                        document.getElementById("countdown-container").classList.add("opacity-100");
-                    }
-
-                    var now = new Date().getTime();
-
-                    var distance = countDownDate - now;
-
-                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById("min").style.setProperty('--value', minutes);
-                    document.getElementById("sec").style.setProperty('--value', seconds);
-
-                    if (distance < 0) {
-                        clearInterval(x);
-                        document.getElementById("delivery-container").innerHTML = "Rendez vous à votre porte";
-                        jsConfetti.addConfetti();
-                    }
-                }, 1000);
-            </script>
-
-            <div class="min-h-[50vh] max-w-xs mx-auto shadow-lg p-5 my-10 flex flex-1 flex-col rounded-lg">
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto stroke-success flex-shrink-0 h-12 w-12" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="mt-3 mb-5 text-center">
-                    <h2 class="text-xl font-bold">Commande confirmée&nbsp;!</h2>
-                    <p>Le <?php echo date("d/m/Y"); ?></p>
-                </div>
-                <?php // foreach ($itemsPayes as $i) : 
-                ?>
-                <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
-                    <div class="flex justify-between p-3">
-                        <div>
-                            <span class="badge badge-xl badge-outline"><?php echo $i['quantite']; ?></span>
-                            <?php echo $i['nom']; ?>
-                        </div>
-                        <div>
-                            <?php echo str_replace(".", ",", $i['prix'] * $i['quantite']); ?>€
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-                <div class="flex justify-between p-3">
-                    <div>
-                        Frais
-                    </div>
-                    <div>
-                        <?php echo str_replace(".", ",", number_format($_SESSION['panier']['prix_final'] - $_SESSION['panier']['prix_total'], 2)); ?>€
-                    </div>
-                </div>
-                <div class="flex justify-between p-3 mt-auto text-xl">
-                    <div class="">
-                        Total
-                    </div>
-                    <div>
-                        <?php echo str_replace(".", ",", $_SESSION['panier']['prix_final']); ?>€
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <script>
-            // window.onbeforeunload = function() {
-            //     return "Si vous quittez cette page, vous ne pourrez plus suivre votre commande, continuer ?";
-            // };
-        </script>
-
     <?php else : ?>
 
         <div class="md:grid grid-cols-3 gap-4 container mx-auto mb-5">
@@ -272,9 +212,9 @@ if (isset($_POST['finaliser'])) {
                                 <span class="label-text">Dès que possible au</span>
                             </label>
                             <select name="adresse" form="formulaire-payer" class="select select-bordered" id="address-select">
-                                <option selected value="<?php echo $_SESSION['adresses'][0] ?>"><?php echo $_SESSION['adresses'][0] ?></option>
+                                <option selected value="<?php echo $_SESSION['adresses'][0]['id'] ?>"><?php echo $_SESSION['adresses'][0]['format'] ?></option>
                                 <?php for ($offset = 1; $offset < count($_SESSION['adresses']); $offset++) : ?>
-                                    <option value="<?php echo $_SESSION['adresses'][$offset] ?>"><?php echo $_SESSION['adresses'][$offset] ?></option>
+                                    <option value="<?php echo $_SESSION['adresses'][$offset]['id'] ?>"><?php echo $_SESSION['adresses'][$offset]['format'] ?></option>
                                 <?php endfor; ?>
                                 <option value="gerer">Gérer les adresses</option>
                             </select>
