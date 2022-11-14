@@ -3,8 +3,8 @@
 ?>
 
 <div class="card card-side border-2 border-base-200 md:w-1/2 lg:w-full md:min-w-[400px] mx-auto">
-    <figure class="w-40 overflow-hidden">
-        <img src="<?php echo $p['image']; ?>" alt="Image Plat" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+    <figure class="w-36 overflow-hidden p-3 md:p-0 md:ml-3">
+        <img src="<?php echo $p['image']; ?>" alt="Image Plat" class="object-cover rounded-lg" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
     </figure>
     <div class="card-body">
         <h2 class="card-title">
@@ -19,7 +19,7 @@
             <?php elseif (basename($_SERVER['PHP_SELF']) == "restaurateur.php") : ?>
                 <form method="post">
                     <!-- <button name="modifier" class="btn btn-ghost mt-2">Modifier</button> -->
-                    <button name="supprimer_plat" class="btn btn-error mt-2" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer ce plat ?');">Supprimer</button>
+                    <button name="supprimer_plat" value="<?php echo $p['id']; ?>" class="btn btn-error mt-2" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer ce plat ?');">Supprimer</button>
                 </form>
             <?php endif; ?>
         </div>

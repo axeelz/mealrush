@@ -111,7 +111,6 @@ try {
             $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_suppr'";
             $query2 = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
             if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
-                FermerConnexion($conn);
                 // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
                 $_SESSION['successMessage'] = "Restaurant supprimé";
                 header('location: ' . $_SERVER['PHP_SELF']);
@@ -174,7 +173,6 @@ try {
                 }
             }
 
-            FermerConnexion($conn);
             $_SESSION['successMessage'] = "Restaurant crée";
             header('location: ' . $_SERVER['PHP_SELF']);
             exit();
@@ -214,7 +212,23 @@ try {
         }
     }
 
-    // Après avoir soumis le formulaire de modification de restaurant
+    // Pour rester sur la page de modification du resto quand la page est rechargée
+    if (isset($_SESSION['idRestoAModifier'])) {
+        // On vérifie si la valeur associée au bouton "gérér" (l'id du resto que l'utilisateur veut modifier)
+        // est bien dans la liste des restaurants appartenant à cet utilisateur,
+        // pour éviter qu'il puisse modifier un autre restaurant en inspectant l'élément
+        // et en modifiant la valeur du bouton
+
+        // La fonction current récupère le premier élement d'une liste, ou false si elle est vide
+        $resto_a_modifier = current(array_filter($restos, function ($resto) {
+            return $resto['id'] == $_SESSION['idRestoAModifier'];
+        }));
+
+        // On active le mode modification
+        $veutGererResto = true;
+    }
+
+    // Après avoir soumis le formulaire de modification de restaurant (bouton enregistrer)
     if (isset($_POST['modifier']) && isset($conn)) {
         do {
             // On récupère les infos sur le restaurant à modifier depuis l'id stocké dans la variable de session
@@ -306,9 +320,92 @@ try {
                 }
             }
 
-            FermerConnexion($conn);
+            // On retire la variable de session pour revenir à la liste de tous les restos
+            unset($_SESSION['idRestoAModifier']);
             header('location: ' . $_SERVER['PHP_SELF']);
             exit();
+        } while (0);
+    }
+
+    // Après avoir soumis le formulaire d'ajout de plat
+    if (isset($_POST['ajouter_plat']) && isset($conn)) {
+        do {
+            $id_restaurant = $_SESSION['idRestoAModifier'];
+
+            // On récupère les valeurs du formulaire
+            $nom_plat = mysqli_real_escape_string($conn, htmlspecialchars($_POST['nom_plat']));
+            $prix_plat = mysqli_real_escape_string($conn, htmlspecialchars($_POST['prix_plat']));
+            $image_plat = mysqli_real_escape_string($conn, htmlspecialchars($_POST['image_plat']));
+            $id_type_plat = mysqli_real_escape_string($conn, htmlspecialchars((int) $_POST['type_plat']));
+
+            // Si un des champs est vide, on stop
+            if (empty($nom_plat) || empty($prix_plat) || empty($image_plat) || empty($id_type_plat)) {
+                array_push($erreurs, "Un des champs requis est vide");
+                break;
+            }
+
+            if (1 < $prix_plat && $prix_plat > 99) {
+                array_push($erreurs, "Ce prix ne correspond pas à nos normes");
+                break;
+            }
+
+            // Vérification que le type est bien dans la BDD (et qu'il a pas été modifié avec inspecter l'élément)
+            $result = mysqli_query($conn, "SELECT * FROM `types_de_plats` WHERE id='$id_type_plat'");
+            $count = mysqli_num_rows($result);
+
+            if (!($count == 1)) {
+                array_push($erreurs, "Ce type de plat n'est pas reconnu");
+                break;
+            }
+
+            $query = "INSERT INTO `plats` (`nom`, `prix`, `image`, `id_restaurant`) VALUES ('$nom_plat', '$prix_plat', '$image_plat', '$id_restaurant')";
+            if (!mysqli_query($conn, $query)) {
+                array_push($erreurs, "Impossible d'ajouter ce plat");
+                break;
+            } else {
+                $id_plat = mysqli_insert_id($conn);
+                $query = "INSERT INTO `plats_types` (`id_plat`, `id_type`) VALUES ('$id_plat', '$id_type_plat')";
+                if (!mysqli_query($conn, $query)) {
+                    array_push($erreurs, "Impossible d'ajouter le type de ce plat");
+                    break;
+                }
+            }
+
+            $_SESSION['successMessage'] = "Plat crée";
+            header('location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } while (0);
+    }
+
+    // Après avoir soumis le formulaire de suppression de plat
+    if (isset($_POST['supprimer_plat']) && isset($conn)) {
+        do {
+            $id_restaurant = $_SESSION['idRestoAModifier'];
+            $id_plat_a_suppr = $_POST['supprimer_plat'];
+
+            // On vérifie que le plat que l'utilisateur souhaite supprimer
+            // existe bien et appartient bien à ce restaurant,
+            // pour éviter qu'il puisse supprimer un autre plat en inspectant l'élément
+            // et en modifiant la valeur du bouton.
+            $result = mysqli_query($conn, "SELECT * FROM `plats` WHERE id='$id_plat_a_suppr' AND id_restaurant='$id_restaurant'");
+            $count = mysqli_num_rows($result);
+
+            if (!($count == 1)) {
+                array_push($erreurs, "Ce plat n'existe pas ou ne vous appartient pas");
+                break;
+            }
+
+            $query = "DELETE FROM plats_types WHERE id_plat='$id_plat_a_suppr'";
+            $query2 = "DELETE FROM plats WHERE id='$id_plat_a_suppr'";
+            if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
+                // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+                $_SESSION['successMessage'] = "Plat supprimé";
+                header('location: ' . $_SERVER['PHP_SELF']);
+                exit();
+            } else {
+                array_push($erreurs, mysqli_error($conn));
+                break;
+            }
         } while (0);
     }
 } catch (\Throwable $th) {
@@ -531,8 +628,8 @@ try {
 
             <div class="divider" id="menu">Gestion du menu</div>
 
-            <div class="flex content-center justify-center">
-                <label for="ajout-plat" class="btn bg-blue text-black border-none hover:text-white mt-3">Ajouter un plat</label>
+            <div class="flex content-center justify-center mb-5">
+                <label for="ajout-plat" class="btn btn-wide bg-blue text-black border-none hover:text-white mt-3">Ajouter un plat</label>
             </div>
 
             <?php
@@ -545,7 +642,7 @@ try {
             ?>
 
             <?php foreach ($types_non_vides as $tnv) : ?>
-                <div class="p-7 lg:mx-16">
+                <div class="p-4 md:p-7 lg:mx-16">
                     <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
                     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
                         <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
@@ -573,7 +670,7 @@ try {
                                 <span class="label-text">Prix du plat</span>
                                 <span class="label-text">en €</span>
                             </label>
-                            <input type="number" name="prix_plat" placeholder="4,99" class="input input-bordered bg-slate-100 w-full" required min="1" max="20" step=".01" />
+                            <input type="number" name="prix_plat" placeholder="4,99" class="input input-bordered bg-slate-100 w-full" required min="1" max="99" step=".01" />
                         </div>
                         <div>
                             <label for="image_plat" class="label">
@@ -581,15 +678,15 @@ try {
                             </label>
                             <input type="url" name="image_plat" placeholder="https://google.com/image.jpg" class="input input-bordered bg-slate-100 w-full" required />
                         </div>
-                        <select class="select select-bordered w-full max-w-xs mt-5" required>
+                        <select class="select select-bordered w-full max-w-xs mt-5" name="type_plat" required>
                             <option disabled selected value="">Quel est le type du plat ?</option>
                             <?php foreach ($types as $t) : ?>
-                                <option><?php echo $t['nom_type']; ?></option>
+                                <option value="<?php echo $t['id_type']; ?>"><?php echo $t['nom_type']; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <div class="modal-action">
                             <label for="ajout-plat" class="btn btn-ghost">Annuler</label>
-                            <button class="btn">Ajouter</button>
+                            <button class="btn" name="ajouter_plat">Ajouter</button>
                         </div>
                     </div>
                 </div>

@@ -227,7 +227,7 @@ if (isset($_POST['finaliser'])) {
                         Frais
                     </div>
                     <div>
-                        <?php echo str_replace(".", ",", $_SESSION['panier']['prix_final'] - $_SESSION['panier']['prix_total']); ?>€
+                        <?php echo str_replace(".", ",", number_format($_SESSION['panier']['prix_final'] - $_SESSION['panier']['prix_total'], 2)); ?>€
                     </div>
                 </div>
                 <div class="flex justify-between p-3 mt-auto text-xl">

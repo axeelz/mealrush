@@ -60,7 +60,7 @@ try {
     <!-- Navigation -->
     <?php include('navbar.php'); ?>
 
-    <div class="flex items-center p-4 max-w-100 bg-base-300 overflow-x-auto" id="tags-container">
+    <div class="flex items-center p-4 max-w-100 bg-base-200 overflow-x-auto" id="tags-container">
         <?php if (!empty($_GET['tag'])) : ?>
             <a class="btn btn-ghost first:ml-auto last:mr-auto" href="index.php">Tous</a>
         <?php endif; ?>
@@ -88,7 +88,7 @@ try {
             </div>
         <?php else : ?>
             <div class="hero min-h-fit" id="main-hero">
-                <div class="hero-overlay bg-opacity-70"></div>
+                <div class="hero-overlay bg-opacity-70 rounded-lg"></div>
                 <div class="hero-content text-center text-neutral-content flex-col">
                     <img src="img/logo.png" class="w-56 rounded-lg shadow-2xl" />
                 </div>
