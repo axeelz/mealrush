@@ -88,7 +88,7 @@ try {
             </div>
         <?php else : ?>
             <div class="hero min-h-fit" id="main-hero">
-                <div class="hero-overlay bg-opacity-70 rounded-lg"></div>
+                <div class="hero-overlay bg-opacity-70"></div>
                 <div class="hero-content text-center text-neutral-content flex-col">
                     <img src="img/logo.png" class="w-56 rounded-lg shadow-2xl" />
                 </div>

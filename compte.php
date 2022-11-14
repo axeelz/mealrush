@@ -24,11 +24,17 @@ try {
         $hasAdresse = true;
         $_SESSION['adresses'] = array();
 
-        $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
+        $query = "SELECT adresses.rue, adresses.numero, adresses.code_postal, adresses.ville, adresses.pays, adresses.id FROM utilisateurs_adresses JOIN adresses ON utilisateurs_adresses.id_adresse = adresses.id WHERE utilisateurs_adresses.id_utilisateur = '$id_utilisateur'";
         $result = mysqli_query($conn, $query);
         $count = mysqli_num_rows($result);
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+            array_push(
+                $_SESSION['adresses'],
+                array(
+                    "id" => $row["id"],
+                    "format" => $row["numero"] . " " . $row["rue"] . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]
+                )
+            );
         }
     }
 } catch (\Throwable $th) {
@@ -39,7 +45,7 @@ try {
 if (isset($_POST['setadress']) && isset($conn)) {
     do {
         // On récupère les valeurs du formulaire
-        $rue = mysqli_real_escape_string($conn, htmlspecialchars($_POST['rue']));
+        $rue = mysqli_real_escape_string($conn, htmlspecialchars(lcfirst($_POST['rue']))); // on met la première lettre en minuscule (rue)
         $numero = mysqli_real_escape_string($conn, htmlspecialchars($_POST['numero']));
         $ville = mysqli_real_escape_string($conn, htmlspecialchars($_POST['ville']));
         $code_postal = mysqli_real_escape_string($conn, htmlspecialchars($_POST['postal']));
@@ -51,28 +57,38 @@ if (isset($_POST['setadress']) && isset($conn)) {
         }
 
         // Insertion d'une nouvelle adresse
-        // Il faudrait vérifier si l'adresse existe pas déjà et récuperer simplement son id ?
-        $query = "INSERT INTO `adresses` (`rue`, `numero`, `ville`, `code_postal`, `pays`) VALUES ('$rue', '$numero', '$ville', '$code_postal', 'France')";
-        if (mysqli_query($conn, $query)) {
-            $id_adresse = mysqli_insert_id($conn);
-        } else {
-            array_push($erreurs, mysqli_error($conn));
-            break;
-        }
+        // On vérifie si l'adresse existe pas déjà et si oui, on récupere simplement son id
+        $query = "SELECT id FROM `adresses` WHERE `rue` = '$rue' AND `numero` = '$numero' AND `ville` = '$ville' AND `code_postal` = '$code_postal' LIMIT 1";
+        $result = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($result);
 
-        // Si l'insertion de l'adresse fonctionné, on stop
-        if (!isset($id_adresse)) {
-            array_push($erreurs, "Erreur lors de la création de l'adresse, impossible de la lier à l'utilisateur");
-            break;
+        // Soit on a bien trouvé une valeur, soit on renvoie false
+        $id_adresse = $row['id'] ?? false;
+
+        // Si cette adresse n'a jamais été ajoutée par un utilisateur, on l'ajoute
+        if ($id_adresse == false) {
+            $query = "INSERT INTO `adresses` (`rue`, `numero`, `ville`, `code_postal`, `pays`) VALUES ('$rue', '$numero', '$ville', '$code_postal', 'France')";
+            if (mysqli_query($conn, $query)) {
+                $id_adresse = mysqli_insert_id($conn);
+            } else {
+                array_push($erreurs, mysqli_error($conn));
+                break;
+            }
+
+            // Si l'insertion de l'adresse a pas fonctionné, on stop
+            if (!isset($id_adresse)) {
+                array_push($erreurs, "Erreur lors de la création de l'adresse, impossible de la lier à l'utilisateur");
+                break;
+            }
         }
 
         // Si tout est bon, on lie l'adresse à l'utilisateur
         $query = "INSERT INTO `utilisateurs_adresses` (`id_utilisateur`, `id_adresse`) VALUES ('$id_utilisateur', '$id_adresse')";
         if (mysqli_query($conn, $query)) {
-            FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché sur la page suivante
             $_SESSION['successMessage'] = "Adresse ajoutée à votre compte";
             if ($_GET['source'] == 'recapitulatif') {
+                FermerConnexion($conn);
                 header('location: recapitulatif.php');
                 exit();
             } else {
@@ -139,10 +155,12 @@ if (isset($_POST['modifier']) && isset($conn)) {
     } while (0);
 }
 
+// Devenir restaurateur
 if (isset($_POST['devenir_restaurateur']) && isset($conn)) {
     $query = "UPDATE utilisateurs SET role='restaurateur' WHERE id='$id_utilisateur'";
 
     if (mysqli_query($conn, $query)) {
+        FermerConnexion($conn);
         $_SESSION['role'] = 'restaurateur';
         $_SESSION['successMessage'] = "Vous êtes maintenant restaurateur";
         header("location: restaurateur.php?nouveaurestaurateur=1");
@@ -152,6 +170,7 @@ if (isset($_POST['devenir_restaurateur']) && isset($conn)) {
     }
 }
 
+// Devenir utilisateur lambda
 if (isset($_POST['devenir_user']) && isset($conn)) {
     $query = "UPDATE utilisateurs SET role='utilisateur' WHERE id='$id_utilisateur'";
 
@@ -161,6 +180,57 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
     } else {
         array_push($erreurs, mysqli_error($conn));
     }
+}
+
+// Après avoir cliqué sur supprimer une adresse
+if (isset($_POST['supprimer_adresse']) && isset($conn)) {
+    do {
+        $id_adresse_a_suppr = $_POST['supprimer_adresse'];
+
+        // On vérifie que l'adresse que l'utilisateur souhaite supprimer
+        // existe bien et appartient bien à cet utilisateur,
+        // pour éviter qu'il puisse supprimer une autre adresse en inspectant l'élément
+        // et en modifiant la valeur du bouton.
+        $result = mysqli_query($conn, "SELECT * FROM `utilisateurs_adresses` WHERE id_adresse='$id_adresse_a_suppr' AND id_utilisateur='$id_utilisateur'");
+        $count = mysqli_num_rows($result);
+
+        if (!($count == 1)) {
+            array_push($erreurs, "Cette adresse n'est pas enregistrée dans votre compte");
+            break;
+        }
+
+        // On supprime le lien entre l'utilisateur et l'adresse
+        $query = "DELETE FROM utilisateurs_adresses WHERE id_adresse='$id_adresse_a_suppr' AND id_utilisateur='$id_utilisateur'";
+
+        if (mysqli_query($conn, $query)) {
+            for ($i = 0; $i < count($_SESSION['adresses']); $i++) {
+                if ($_SESSION['adresses'][$i]['id'] == $id_adresse_a_suppr)
+                    unset($_SESSION['adresses'][$i]);
+            }
+        } else {
+            array_push($erreurs, mysqli_error($conn));
+            break;
+        }
+
+        // On vérifie si l'adresse n'est pas aussi liée à un autre utilisateur, dans ce cas on ne la supprime pas
+        $verif = "SELECT * FROM utilisateurs_adresses WHERE id_adresse='$id_adresse_a_suppr'";
+        $result = mysqli_query($conn, $verif);
+        $count = mysqli_num_rows($result);
+
+        // Si l'adresse appartient à personne d'autre, on peut la supprimer
+        if ($count == 0) {
+            $query2 = "DELETE FROM adresses WHERE id='$id_adresse_a_suppr'";
+            if (!mysqli_query($conn, $query2)) {
+                array_push($erreurs, mysqli_error($conn));
+                break;
+            }
+        }
+
+        // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
+        $_SESSION['successMessage'] = "Adresse supprimée";
+        header('location: ' . $_SERVER['PHP_SELF'] . "#ouvrir-adresses");
+        exit();
+    } while (0);
 }
 ?>
 
@@ -597,17 +667,25 @@ if (isset($_POST['devenir_user']) && isset($conn)) {
         <div class="modal-box text-center">
             <h3 class="font-bold text-lg mb-5">Adresses enregistrées</h3>
             <?php foreach ($_SESSION['adresses'] as $a) : ?>
+                <?php $auMoinsUneAdresse = true; ?>
                 <div class="flex justify-between items-center gap-4">
                     <span class="flex items-center h-12 font-semibold text-sm whitespace-nowrap overflow-scroll max-w-full">
-                        <?php echo $a; ?>
+                        <?php echo $a['format']; ?>
                     </span>
-                    <button class="btn btn-circle btn-outline btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <form method="post">
+                        <button class="btn btn-circle btn-outline btn-sm" name="supprimer_adresse" value="<?php echo $a['id']; ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             <?php endforeach; ?>
+
+            <?php if (!isset($auMoinsUneAdresse)) : ?>
+                <p class="text-start">Aucune adresse enregistrée</p>
+            <?php endif; ?>
+
             <div class="modal-action">
                 <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
                 <!-- Si on vient ici depuis le sélecteur d'adresse, on renvoie vers la page confirmation au lieu de rester sur la page de compte -->

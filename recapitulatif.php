@@ -38,7 +38,7 @@ try {
             $result = mysqli_query($conn, $query);
             $count = mysqli_num_rows($result);
             while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                array_push($_SESSION['adresses'], $row["numero"] . " " . lcfirst($row["rue"]) . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
+                array_push($_SESSION['adresses'], $row["numero"] . " " . $row["rue"] . ", " . $row["code_postal"] . ", " . $row["ville"] . ", " . $row["pays"]);
             }
         }
     }

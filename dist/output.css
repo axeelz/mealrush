@@ -3989,6 +3989,10 @@ body[dir="rtl"] .checkbox:checked,
   text-align: center;
 }
 
+.text-start {
+  text-align: start;
+}
+
 .text-end {
   text-align: end;
 }
