@@ -12,6 +12,12 @@ try {
 
     $id_utilisateur = $_SESSION['id_utilisateur'];
 
+    // On récupère le nombre de commandes de l'utilisateur
+    $query = "SELECT COUNT(*) AS nb FROM commandes WHERE id_utilisateur='$id_utilisateur'";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($result);
+    $nb_commandes = $row['nb'];
+
     $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur'";
     $veutAjouterAdresse = isset($_GET['ajouteradresse']);
     $result = mysqli_query($conn, $query);
@@ -618,7 +624,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
 
                         <div class="stat place-items-center">
                             <div class="stat-title">Activité</div>
-                            <div class="stat-value">0</div>
+                            <div class="stat-value"><?php echo $nb_commandes; ?></div>
                             <div class="stat-desc">commandes</div>
                         </div>
 
