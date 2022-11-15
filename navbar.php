@@ -209,13 +209,13 @@ if (isset($_POST['moins1'])) {
                             Mon compte
                         </a>
                     </li>
+                    <li><a href="commandes.php">Mes commandes</a></li>
                     <?php if ($isRestaurateur) : ?>
                         <li><a href="restaurateur.php">Gestion restaurants</a></li>
                     <?php endif; ?>
                     <?php if ($isAdmin) : ?>
                         <li><a href="admin.php">Gestion admin</a></li>
                     <?php endif; ?>
-                    <li><a href="commandes.php">Mes commandes</a></li>
                     <li><a href="deconnexion.php">Se déconnecter</a></li>
                 </ul>
             </div>

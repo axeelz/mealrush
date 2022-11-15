@@ -34,12 +34,24 @@ try {
     // On récupère le panier de l'utilisateur
     $panier = json_decode($row['panier'], true);
 
+    // On vérifie si la commande a été livrée
+    $livraison = new DateTime($row['livraison']);
+    $maintenant = new DateTime();
+    if ($livraison < $maintenant) {
+        $terminee = true;
+    } else {
+        $terminee = false;
+    }
+
     // On récupère le jour et l'heure de l'enregistrement de la commande
     $date_commande = explode(" ", $row['enregistrement'])[0];
     $heure_commande = explode(" ", $row['enregistrement'])[1];
 
     // On récupère l'heure de livraison estimée
-    $heure_livraison = $row['livraison'];
+    $dateheure_livraison = $row['livraison'];
+    // On récupère le jour et l'heure de la livraison
+    $date_livraison = explode(" ", $dateheure_livraison)[0];
+    $heure_livraison = explode(" ", $dateheure_livraison)[1];
 
     $itemsPayes = $panier['items'];
     $prixFinal = $panier['prix_final'];
@@ -84,53 +96,56 @@ try {
 
         <h1 class="text-2xl text-center">Merci d'avoir commandé chez MealRush&nbsp;!</h1>
 
-        <div class="p-2 rounded-box mx-auto w-fit grid grid-flow-col gap-5 text-center auto-cols-max items-center" id="delivery-container">
-            <span>Livraison estimée dans</span>
-            <div class="flex gap-5 opacity-0 transition-all duration-500" id="countdown-container">
-                <div>
-                    <span class="countdown text-3xl">
-                        <span style="--value: 30;" id="min"></span>
-                    </span>
-                    min
+        <div class="p-2 mx-auto w-fit grid grid-flow-col gap-5 text-center auto-cols-max items-center" id="delivery-container">
+            <?php if (!$terminee) : ?>
+                <span>Livraison estimée dans</span>
+                <div class="flex gap-5 opacity-0 transition-all duration-500" id="countdown-container">
+                    <div>
+                        <span class="countdown text-3xl">
+                            <span style="--value: 30;" id="min"></span>
+                        </span>
+                        min
+                    </div>
+                    <div>
+                        <span class="countdown text-3xl">
+                            <span style="--value: 00;" id="sec"></span>
+                        </span>
+                        sec
+                    </div>
                 </div>
-                <div>
-                    <span class="countdown text-3xl">
-                        <span style="--value: 00;" id="sec"></span>
-                    </span>
-                    sec
-                </div>
-            </div>
+                <script>
+                    // On génère un temps de livraison aléatoire entre 10 et 30 minutes dans la base de données,
+                    // on fait ici le compte à rebours entre maintenant et cette date
+
+                    var countDownDate = new Date("<?php echo $dateheure_livraison; ?>").getTime();
+                    const jsConfetti = new JSConfetti();
+
+                    var x = setInterval(function() {
+                        if (document.getElementById("countdown-container").classList.contains("opacity-0")) {
+                            document.getElementById("countdown-container").classList.remove("opacity-0");
+                            document.getElementById("countdown-container").classList.add("opacity-100");
+                        }
+
+                        var now = new Date().getTime();
+                        var distance = countDownDate - now;
+
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        document.getElementById("min").style.setProperty('--value', minutes);
+                        document.getElementById("sec").style.setProperty('--value', seconds);
+
+                        if (distance < 0) {
+                            clearInterval(x);
+                            document.getElementById("delivery-container").innerHTML = "Rendez vous à votre porte";
+                            jsConfetti.addConfetti();
+                        }
+                    }, 1000);
+                </script>
+            <?php else : ?>
+                <span>Commande livrée le <?php echo date("d/m/Y", strtotime($date_livraison)) . " à " . date('H:i', strtotime($heure_livraison)); ?></span>
+            <?php endif; ?>
         </div>
-        <script>
-            // On génère un temps de livraison aléatoire entre 10 et 30 minutes dans la base de données,
-            // on fait ici le compte à rebours entre maintenant et cette date
-
-            var countDownDate = new Date("<?php echo $heure_livraison; ?>").getTime();
-            const jsConfetti = new JSConfetti();
-
-            var x = setInterval(function() {
-                if (document.getElementById("countdown-container").classList.contains("opacity-0")) {
-                    document.getElementById("countdown-container").classList.remove("opacity-0");
-                    document.getElementById("countdown-container").classList.add("opacity-100");
-                }
-
-                var now = new Date().getTime();
-
-                var distance = countDownDate - now;
-
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById("min").style.setProperty('--value', minutes);
-                document.getElementById("sec").style.setProperty('--value', seconds);
-
-                if (distance < 0) {
-                    clearInterval(x);
-                    document.getElementById("delivery-container").innerHTML = "Rendez vous à votre porte";
-                    jsConfetti.addConfetti();
-                }
-            }, 1000);
-        </script>
 
         <div class="min-h-[50vh] max-w-xs mx-auto shadow-lg p-5 my-10 flex flex-1 flex-col rounded-lg">
             <div>
@@ -140,7 +155,7 @@ try {
             </div>
             <div class="mt-3 mb-5 text-center">
                 <h2 class="text-xl font-bold">Commande confirmée&nbsp;!</h2>
-                <p>Le <?php echo date("d/m/Y", strtotime($date_commande)) . " à " . $heure_commande; ?></p>
+                <p>Le <?php echo date("d/m/Y", strtotime($date_commande)) . " à " . date('H:i', strtotime($heure_commande)); ?></p>
             </div>
             <?php foreach ($itemsPayes as $i) : ?>
                 <div class="flex justify-between p-3">
