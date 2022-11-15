@@ -119,7 +119,7 @@ try {
                                     </div>
                                     <div>
                                         <div class="font-bold"><?php echo $c['restaurant']; ?></div>
-                                        <div class="text-sm opacity-60"><?php echo $c['nb_items']; ?> articles</div>
+                                        <div class="text-sm opacity-60"><?php echo $c['nb_items']; ?> plats</div>
                                     </div>
                                 </div>
                             </td>

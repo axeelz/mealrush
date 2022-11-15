@@ -42,7 +42,7 @@ try {
 }
 
 // Définition de l'adresse de l'utilisateur 
-if (isset($_POST['setadress']) && isset($conn)) {
+if (isset($_POST['ajouter_adresse']) && isset($conn)) {
     do {
         // On récupère les valeurs du formulaire
         $rue = mysqli_real_escape_string($conn, htmlspecialchars(lcfirst($_POST['rue']))); // on met la première lettre en minuscule (rue)
@@ -57,6 +57,7 @@ if (isset($_POST['setadress']) && isset($conn)) {
         }
 
         // Insertion d'une nouvelle adresse
+
         // On vérifie si l'adresse existe pas déjà et si oui, on récupere simplement son id
         $query = "SELECT id FROM `adresses` WHERE `rue` = '$rue' AND `numero` = '$numero' AND `ville` = '$ville' AND `code_postal` = '$code_postal' LIMIT 1";
         $result = mysqli_query($conn, $query);
@@ -81,6 +82,17 @@ if (isset($_POST['setadress']) && isset($conn)) {
                 break;
             }
         }
+
+        // On vérifie si l'adresse n'est pas déjà liée à l'utilisateur
+        $query = "SELECT * FROM `utilisateurs_adresses` WHERE `id_utilisateur` = '$id_utilisateur' AND `id_adresse` = '$id_adresse' LIMIT 1";
+        $result = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($result);
+        $count = mysqli_num_rows($result);
+        if ($count > 0) {
+            array_push($erreurs, "Vous avez déjà ajouté cette adresse");
+            break;
+        }
+
 
         // Si tout est bon, on lie l'adresse à l'utilisateur
         $query = "INSERT INTO `utilisateurs_adresses` (`id_utilisateur`, `id_adresse`) VALUES ('$id_utilisateur', '$id_adresse')";
@@ -194,7 +206,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
         $result = mysqli_query($conn, "SELECT * FROM `utilisateurs_adresses` WHERE id_adresse='$id_adresse_a_suppr' AND id_utilisateur='$id_utilisateur'");
         $count = mysqli_num_rows($result);
 
-        if (!($count == 1)) {
+        if ($count != 1) {
             array_push($erreurs, "Cette adresse n'est pas enregistrée dans votre compte");
             break;
         }
@@ -212,13 +224,18 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
             break;
         }
 
-        // On vérifie si l'adresse n'est pas aussi liée à un autre utilisateur, dans ce cas on ne la supprime pas
-        $verif = "SELECT * FROM utilisateurs_adresses WHERE id_adresse='$id_adresse_a_suppr'";
-        $result = mysqli_query($conn, $verif);
-        $count = mysqli_num_rows($result);
+        // On vérifie que l'adresse n'est pas aussi liée à un autre utilisateur, dans ce cas on ne la supprime pas
+        $query_verif = "SELECT * FROM utilisateurs_adresses WHERE id_adresse='$id_adresse_a_suppr'";
+        $result_verif = mysqli_query($conn, $query_verif);
+        $count_users_avec_cette_adresse = mysqli_num_rows($result_verif);
 
-        // Si l'adresse appartient à personne d'autre, on peut la supprimer
-        if ($count == 0) {
+        // On vérifie que l'adresse n'est pas liée à une commande passée, dans ce cas on ne la supprime pas
+        $query_verif_2 = "SELECT * FROM commandes WHERE id_adresse='$id_adresse_a_suppr'";
+        $result_verif_2 = mysqli_query($conn, $query_verif_2);
+        $count_commandes_avec_cette_adresse = mysqli_num_rows($result_verif_2);
+
+        // Si l'adresse appartient à personne d'autre ET qu'elle n'est pas liée à une commande passée, on peut la supprimer
+        if ($count_users_avec_cette_adresse == 0 && $count_commandes_avec_cette_adresse == 0) {
             $query2 = "DELETE FROM adresses WHERE id='$id_adresse_a_suppr'";
             if (!mysqli_query($conn, $query2)) {
                 array_push($erreurs, mysqli_error($conn));
@@ -548,7 +565,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
                             <a class="btn btn-block btn-ghost border-black mt-5" href="compte.php">Annuler</a>
                         <?php endif; ?>
 
-                        <button class="btn btn-block btn-neutral mt-5" name="setadress">Valider</button>
+                        <button class="btn btn-block btn-neutral mt-5" name="ajouter_adresse">Valider</button>
                     </div>
                 </form>
             </div>

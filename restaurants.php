@@ -18,6 +18,12 @@ try {
     $result = mysqli_query($conn, $query);
     $row = mysqli_fetch_assoc($result);
 
+    // Si aucun resultat, on redirige vers l'accueil
+    if (!$row) {
+        header("location: index.php");
+        exit();
+    }
+
     // On récupère ses tags
     $tags_du_resto = array();
     $query_get_tags_restaurant = "SELECT tags.nom_tag FROM restaurants_tags JOIN tags ON restaurants_tags.id_tag = tags.id WHERE restaurants_tags.id_restaurant = '$id_restaurant'";
