@@ -89,19 +89,18 @@ if (isset($_POST['payer']) && isset($conn)) {
                 $panier = json_encode($_SESSION['panier'], JSON_UNESCAPED_UNICODE);
                 $query = "INSERT INTO `commandes` (`montant`, `panier`,`id_utilisateur`, `id_adresse`, `livraison`) VALUES ('$montant', '$panier', '$id_utilisateur', '$id_adresse', '$heure_livraison')";
                 if (mysqli_query($conn, $query)) {
-                    // Sous-table commandes_plats -> méthode abandonnée car il est plus simple de stocker le panier en json dans la table commandes
-
-                    /* $id_commande = mysqli_insert_id($conn);
-                    foreach ($_SESSION['panier']['items'] as $i) {
-                        $quantite = $i['quantite'];
-                        $id = $i['id'];
-                        $insertion_plat = "INSERT INTO `commandes_plats` (`quantite`, `id_plat`, `id_commande`) VALUES ('$quantite', '$id', '$id_commande')";
-                        if (!mysqli_query($conn, $insertion_plat)) {
-                            array_push($erreurs, mysqli_error($conn));
-                            break;
+                    try {
+                        $destinataire = $_SESSION['email'];
+                        $sujet_mail = "Confirmation de votre commande";
+                        $contenu_mail = "<h4>Nous avons bien reçu votre commande !</h4>";
+                        foreach ($_SESSION['panier']['items'] as $i) {
+                            $contenu_mail .= nl2br($i['quantite'] . " " . $i['nom'] . " pour " . str_replace('.', ',', $i['prix'] * $i['quantite']) . "€\n");
                         }
-                    } */
-
+                        $contenu_mail .= nl2br("\nTotal avec charges : " . str_replace('.', ',', $_SESSION['panier']['prix_final']) . "€");
+                        exec("/Applications/XAMPP/xamppfiles/bin/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
+                    } catch (\Throwable $th) {
+                        echo $th;
+                    }
                     $_SESSION['successMessage'] = "Commande enregistrée";
                     break;
                 } else {
@@ -330,6 +329,16 @@ if (isset($_POST['finaliser'])) {
                 </form>
             </div>
         </div>
+
+        <script>
+            const boutonPayer = document.getElementsByName("payer")[0];
+
+            boutonPayer.addEventListener("click", () => {
+                if (document.getElementById("formulaire-payer").checkValidity()) {
+                    boutonPayer.classList.toggle("loading");
+                }
+            });
+        </script>
 
     <?php endif; ?>
 

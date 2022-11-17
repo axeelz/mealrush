@@ -94,7 +94,7 @@ if (isset($_POST['login'])) {
             <h1 class="text-xl font-bold md:text-2xl mb-5">
                 Connectez vous à votre compte
             </h1>
-            <form class="form-control w-full max-w-xs md:max-w-md" method="post">
+            <form class="form-control w-full max-w-xs md:max-w-md" method="post" id="formulaire-connexion">
                 <label for="email" class="label">
                     <span class="label-text">Votre adresse e-mail</span>
                 </label>
@@ -109,7 +109,7 @@ if (isset($_POST['login'])) {
                     const boutonConnexion = document.getElementsByName("login")[0];
 
                     boutonConnexion.addEventListener("click", () => {
-                        if (document.getElementById("email").value.trim().length != 0 && document.getElementById("mdp").value.trim().length != 0 && document.getElementById("email").checkValidity()) {
+                        if (document.getElementById("formulaire-connexion").checkValidity()) {
                             boutonConnexion.classList.toggle("loading");
                         }
                     });

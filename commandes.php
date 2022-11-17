@@ -48,7 +48,7 @@ try {
         }
 
         array_push($commandes, array(
-            "heure_commande" => "Le " . date("d/m/Y", strtotime(explode(" ", $row['enregistrement'])[0])) . " à " . explode(" ", $row['enregistrement'])[1],
+            "heure_commande" => "Le " . date("d/m/Y", strtotime(explode(" ", $row['enregistrement'])[0])) . " à " . date('H:i', strtotime(explode(" ", $row['enregistrement'])[1])),
             "heure_livraison" =>  $row['livraison'],
             "nb_items" => $panier['nb_total'],
             "montant" => str_replace(".", ",", $row['montant']),

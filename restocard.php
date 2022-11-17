@@ -3,9 +3,11 @@
 ?>
 
 <div class="card shadow-md h-96 w-[310px] min-w-[310px] snap-center">
-    <figure class="h-44 overflow-hidden">
-        <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
-    </figure>
+    <a href="restaurants.php?id=<?php echo $r['id']; ?>">
+        <figure class="h-44 overflow-hidden">
+            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+        </figure>
+    </a>
     <div class="card-body">
         <h2 class="card-title">
             <?php echo $r['nom']; ?>

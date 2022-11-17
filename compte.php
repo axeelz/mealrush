@@ -62,6 +62,11 @@ if (isset($_POST['ajouter_adresse']) && isset($conn)) {
             break;
         }
 
+        if (!ctype_digit($code_postal) || strlen($code_postal) > 10) {
+            array_push($erreurs, "Le code postal est incorrect");
+            break;
+        }
+
         // Insertion d'une nouvelle adresse
 
         // On vérifie si l'adresse existe pas déjà et si oui, on récupere simplement son id
@@ -311,7 +316,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
                             <label for="postal" class="label">
                                 <span class="label-text">Code postal</span>
                             </label>
-                            <input type="text" name="postal" id="postal" placeholder="75001" class="input input-bordered bg-slate-100 w-full" required />
+                            <input type="number" name="postal" id="postal" placeholder="75001" class="input input-bordered bg-slate-100 w-full" required />
                         </div>
                     </div>
                     <p class="opacity-60">Nous ne livrons qu'en France pour l'instant</p>
