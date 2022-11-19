@@ -122,7 +122,7 @@ try {
                                         <div class="avatar">
                                             <div class="mask mask-squircle w-12 h-12">
                                                 <?php foreach ($c['images'] as $i) : ?>
-                                                    <img src="<?php echo $i; ?>" alt="Image du restaurant" class="rounded" />
+                                                    <img src="<?php echo $i; ?>" alt="Image du restaurant" class="rounded" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
