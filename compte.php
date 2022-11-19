@@ -128,15 +128,15 @@ if (isset($_POST['ajouter_adresse']) && isset($conn)) {
 // Après avoir cliqué sur supprimer user
 if (isset($_POST['supprimer_user']) && isset($conn)) {
     do {
-        // Supprimer les commandes de l'utilisateur
+        // On supprime les commandes de l'utilisateur
         $query = "DELETE FROM commandes WHERE id_utilisateur='$id_utilisateur'";
         // On supprime le lien entre l'adresse et l'utilisateur, puis on supprime les adresses qui ne sont liées à aucun autre utilisateur
         // et à aucune commande d'un autre utilisateur
         $query2 = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_utilisateur'";
         $query3 = "DELETE FROM adresses WHERE id NOT IN (SELECT id_adresse FROM utilisateurs_adresses) AND id NOT IN (SELECT id_adresse FROM commandes)";
-        // Supprimer les restaurants de l'utilisateur (cela va aussi supprimer tous les plats du restaurant)
+        // On supprime les restaurants de l'utilisateur (cela va aussi supprimer tous les plats du restaurant)
         $query4 = "DELETE FROM restaurants WHERE id_utilisateur='$id_utilisateur'";
-        // Enfin, supprimer l'utilisateur
+        // Enfin, on supprime l'utilisateur
         $query5 = "DELETE FROM utilisateurs WHERE id='$id_utilisateur'";
 
         if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4) && mysqli_query($conn, $query5)) {
