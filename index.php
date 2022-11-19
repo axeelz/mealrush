@@ -96,8 +96,8 @@ try {
         <?php endif; ?>
 
         <div class="p-7 lg:mx-16" id="restos-container">
-            <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Tous les restaurants</h2>
-            <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+            <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Tous les restaurants</h2>
+            <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                 <?php if (empty($restos)) : ?>
                     <div class="alert shadow-lg">
                         <div>
@@ -130,8 +130,8 @@ try {
 
         <?php foreach ($tags_non_vides as $tnv) : ?>
             <div class="p-7 lg:mx-16">
-                <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
-                <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+                <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1"><?php echo $tnv; ?></h2>
+                <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if (in_array($tnv, $r['tags'])) : ?>
                             <?php $auMoinsUnResto = true; ?>
@@ -165,8 +165,8 @@ try {
         </div>
 
         <div class="p-7 lg:mx-16">
-            <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants correspondants</h2>
-            <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+            <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Restaurants correspondants</h2>
+            <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                 <?php foreach ($restos as $r) : ?>
                     <?php if (in_array($nom_tag_selectionne, $r['tags'])) : ?>
                         <?php $auMoinsUnResultat = true; ?>

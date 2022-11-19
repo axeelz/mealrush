@@ -10,7 +10,7 @@
         <h2 class="card-title">
             <?php echo $p['nom']; ?>
         </h2>
-        <div class="badge badge-lg"><?php echo str_replace(".", ",", $p['prix']); ?> €</div>
+        <div class="badge badge-lg"><?php echo str_replace(".", ",", number_format($p['prix'], 2)); ?> €</div>
         <div class="card-actions justify-end">
             <?php if (basename($_SERVER['PHP_SELF']) == "restaurants.php") : ?>
                 <form method="post">

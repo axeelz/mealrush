@@ -125,6 +125,14 @@ if (isset($_POST['signup']) && isset($conn)) {
 
         FermerConnexion($conn);
 
+        // On prépare l'email à envoyer à l'utilisateur
+        $destinataire = $email;
+        $sujet_mail = "Bienvenue sur MealRush !";
+        $contenu_mail = "<h4>Bienvenue, " . $prenom . "</h4><p>Vous venez de créer un compte chez nous, vous pouvez dès maintenant commander et vous régaler !</p>";
+
+        // On utilise exec pour effectuer la tache en arrière plan afin de ne pas bloquer le chargement de la page pour l'utilisateur
+        exec(PHP_BINDIR . "/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
+
         // On définit les variables de session et on redirige vers une page
         $_SESSION['connecte'] = true;
         $_SESSION['email'] = $email;
@@ -180,7 +188,7 @@ if (isset($_POST['signup']) && isset($conn)) {
             <h1 class="text-xl font-bold md:text-2xl mb-5">
                 Créer un compte
             </h1>
-            <form class="form-control w-full max-w-xs md:max-w-md" method="post" autocomplete="new-password">
+            <form class="form-control w-full max-w-xs md:max-w-md" method="post" autocomplete="new-password" id="formulaire-creation">
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div id="row-1">
                         <label for="prenom" class="label">
@@ -289,6 +297,15 @@ if (isset($_POST['signup']) && isset($conn)) {
                     });
                 </script>
                 <button class="btn btn-block bg-primary border-none hover:text-white text-black my-5" name="signup">Créer mon compte</button>
+                <script>
+                    const boutonConnexion = document.getElementsByName("signup")[0];
+
+                    boutonConnexion.addEventListener("click", () => {
+                        if (document.getElementById("formulaire-creation").checkValidity()) {
+                            boutonConnexion.classList.toggle("loading");
+                        }
+                    });
+                </script>
                 <p>Vous avez déjà un compte ?
                     <a href="connexion.php" class="link font-bold">Connectez vous !</a>
                 </p>

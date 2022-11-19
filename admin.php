@@ -37,9 +37,10 @@ try {
         ));
     }
 
-    // On récupère les utilisateurs
+    // On récupère les utilisateurs (sauf soi même)
     $users = array();
-    $query = "SELECT * FROM utilisateurs";
+    $moi = $_SESSION['id_utilisateur'];
+    $query = "SELECT * FROM utilisateurs WHERE id != '$moi'";
     $result = mysqli_query($conn, $query);
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         array_push($users, array(
@@ -95,9 +96,8 @@ if (isset($_POST['masquer']) && isset($conn)) {
 if (isset($_POST['supprimer']) && isset($conn)) {
     do {
         $id_restaurant_a_suppr = $_POST['supprimer'];
-        $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_suppr'";
-        $query2 = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
-        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
+        $query = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
+        if (mysqli_query($conn, $query)) {
             FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
             $_SESSION['successMessage'] = "Restaurant supprimé";
@@ -114,12 +114,19 @@ if (isset($_POST['supprimer']) && isset($conn)) {
 if (isset($_POST['supprimer_user']) && isset($conn)) {
     do {
         $id_user_a_suppr = $_POST['supprimer_user'];
-        $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_user_a_suppr'";
-        $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_user_a_suppr'";
-        $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_user_a_suppr'";
-        $query4 = "DELETE FROM utilisateurs WHERE id='$id_user_a_suppr'";
 
-        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
+        // Supprimer les commandes de l'utilisateur
+        $query = "DELETE FROM commandes WHERE id_utilisateur='$id_user_a_suppr'";
+        // On supprime le lien entre l'adresse et l'utilisateur, puis on supprime les adresses qui ne sont liées à aucun autre utilisateur
+        // et à aucune commande d'un autre utilisateur
+        $query2 = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_user_a_suppr'";
+        $query3 = "DELETE FROM adresses WHERE id NOT IN (SELECT id_adresse FROM utilisateurs_adresses) AND id NOT IN (SELECT id_adresse FROM commandes)";
+        // Supprimer les restaurants de l'utilisateur (cela va aussi supprimer tous les plats du restaurant)
+        $query4 = "DELETE FROM restaurants WHERE id_utilisateur='$id_user_a_suppr'";
+        // Enfin, supprimer l'utilisateur
+        $query5 = "DELETE FROM utilisateurs WHERE id='$id_user_a_suppr'";
+
+        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4) && mysqli_query($conn, $query5)) {
             FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
             $_SESSION['successMessage'] = "Utilisateur et ses restaurants supprimés";
@@ -167,8 +174,8 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     </div>
 
     <div class="p-7 lg:mx-16">
-        <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants en attente d'approbation</h2>
-        <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+        <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Restaurants en attente d'approbation</h2>
+        <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'false') : ?>
                     <?php $auMoinsUnRestoEnAttente = true; ?>
@@ -195,8 +202,8 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     </div>
 
     <div class="p-7 lg:mx-16">
-        <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants approuvés</h2>
-        <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+        <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Restaurants approuvés</h2>
+        <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'true') : ?>
                     <?php $auMoinsUnRestoApprouve = true; ?>
@@ -217,7 +224,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     </div>
 
     <div class="p-7 lg:mx-16">
-        <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Utilisateurs</h2>
+        <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Utilisateurs</h2>
         <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll">
             <?php foreach ($users as $u) : ?>
                 <div class="card w-96 bg-base-100 shadow-md">
@@ -234,7 +241,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
                         </div>
                         <div class="card-actions justify-end">
                             <form method="post">
-                                <button class="btn btn-error" name="supprimer_user" value="<?php echo $u['id']; ?>">Supprimer</button>
+                                <button class="btn btn-error" name="supprimer_user" value="<?php echo $u['id']; ?>" onClick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">Supprimer</button>
                             </form>
                         </div>
                     </div>

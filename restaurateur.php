@@ -108,9 +108,8 @@ try {
                 break;
             }
 
-            $query = "DELETE FROM restaurants_tags WHERE id_restaurant='$id_restaurant_a_suppr'";
-            $query2 = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
-            if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
+            $query = "DELETE FROM restaurants WHERE id='$id_restaurant_a_suppr'";
+            if (mysqli_query($conn, $query)) {
                 // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
                 $_SESSION['successMessage'] = "Restaurant supprimé";
                 header('location: ' . $_SERVER['PHP_SELF']);
@@ -395,9 +394,8 @@ try {
                 break;
             }
 
-            $query = "DELETE FROM plats_types WHERE id_plat='$id_plat_a_suppr'";
-            $query2 = "DELETE FROM plats WHERE id='$id_plat_a_suppr'";
-            if (mysqli_query($conn, $query) && mysqli_query($conn, $query2)) {
+            $query = "DELETE FROM plats WHERE id='$id_plat_a_suppr'";
+            if (mysqli_query($conn, $query)) {
                 // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
                 $_SESSION['successMessage'] = "Plat supprimé";
                 header('location: ' . $_SERVER['PHP_SELF']);
@@ -525,8 +523,8 @@ try {
             </div>
 
             <div class="p-7 lg:mx-16">
-                <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants approuvés</h2>
-                <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+                <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Restaurants approuvés</h2>
+                <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if ($r['approuve'] == 'true') : ?>
                             <?php $auMoinsUnRestoApprouve = true; ?>
@@ -547,8 +545,8 @@ try {
             </div>
 
             <div class="p-7 lg:mx-16">
-                <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1">Restaurants en attente d'approbation</h2>
-                <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
+                <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Restaurants en attente d'approbation</h2>
+                <div class="flex items-stretch gap-4 pb-5 px-1 overflow-x-scroll snap-mandatory snap-x">
                     <?php foreach ($restos as $r) : ?>
                         <?php if ($r['approuve'] == 'false') : ?>
                             <?php $auMoinsUnRestoEnAttente = true; ?>
@@ -579,18 +577,16 @@ try {
                     <div class="hero-content flex-col lg:flex-row">
                         <div>
                             <img src="<?php echo $resto_a_modifier['image']; ?>" class="h-[250px] rounded-3xl overflow-hidden w-auto mx-auto shadow-2xl" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+                            <!-- Pas encore implémenté, valeurs fictives -->
                             <div class="stats shadow mt-5">
-
                                 <div class="stat place-items-center">
                                     <div class="stat-title">Commandes</div>
                                     <div class="stat-value">0</div>
                                 </div>
-
                                 <div class="stat place-items-center">
                                     <div class="stat-title">Note</div>
                                     <div class="stat-value">4.5</div>
                                 </div>
-
                             </div>
                         </div>
                         <div>
@@ -643,7 +639,7 @@ try {
 
             <?php foreach ($types_non_vides as $tnv) : ?>
                 <div class="p-4 md:p-7 lg:mx-16">
-                    <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
+                    <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1"><?php echo $tnv; ?></h2>
                     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
                         <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
                             <?php if ($p['type']['nom'] == $tnv) : ?>

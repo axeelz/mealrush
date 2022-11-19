@@ -16,6 +16,12 @@ try {
         "FREE" => 100,
     );
 
+    $restos_livraison = array();
+    foreach ($_SESSION['panier']['items'] as $i) {
+        if (!in_array($i['restaurant'], $restos_livraison))
+            array_push($restos_livraison, $i['restaurant']);
+    }
+
     // Si l'utilisateur est connecté, on affiche ses adresses
     if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
 
@@ -88,21 +94,21 @@ if (isset($_POST['payer']) && isset($conn)) {
                 // Insertion de la commande en base de donnée, avec le panier enregistré en json
                 $panier = json_encode($_SESSION['panier'], JSON_UNESCAPED_UNICODE);
                 $query = "INSERT INTO `commandes` (`montant`, `panier`,`id_utilisateur`, `id_adresse`, `livraison`) VALUES ('$montant', '$panier', '$id_utilisateur', '$id_adresse', '$heure_livraison')";
-                if (mysqli_query($conn, $query)) {
-                    try {
-                        $destinataire = $_SESSION['email'];
-                        $sujet_mail = "Confirmation de votre commande";
-                        $contenu_mail = "<h4>Nous avons bien reçu votre commande !</h4>";
-                        foreach ($_SESSION['panier']['items'] as $i) {
-                            $contenu_mail .= nl2br($i['quantite'] . " " . $i['nom'] . " pour " . str_replace('.', ',', $i['prix'] * $i['quantite']) . "€\n");
-                        }
-                        $contenu_mail .= nl2br("\nTotal avec charges : " . str_replace('.', ',', $_SESSION['panier']['prix_final']) . "€");
 
-                        // On utilise exec pour effectuer la tache en arrière plan afin de ne pas bloquer le chargement de la page pour l'utilisateur
-                        exec(PHP_BINDIR . "/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
-                    } catch (\Throwable $th) {
-                        echo $th;
+                if (mysqli_query($conn, $query)) {
+                    // On prépare l'email à envoyer à l'utilisateur
+                    $destinataire = $_SESSION['email'];
+                    $sujet_mail = "Confirmation de votre commande";
+                    $contenu_mail = "<h4>Nous avons bien reçu votre commande !</h4>";
+                    foreach ($_SESSION['panier']['items'] as $i) {
+                        $contenu_mail .= nl2br($i['quantite'] . " " . $i['nom'] . " pour " . str_replace('.', ',', $i['prix'] * $i['quantite']) . "€\n");
                     }
+                    $contenu_mail .= nl2br("\nTotal avec charges : " . str_replace('.', ',', $_SESSION['panier']['prix_final']) . "€");
+
+                    // On utilise exec pour effectuer la tache en arrière plan afin de ne pas bloquer le chargement de la page pour l'utilisateur
+                    exec(PHP_BINDIR . "/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
+
+                    // Processus de commande terminé
                     $_SESSION['successMessage'] = "Commande enregistrée";
                     break;
                 } else {
@@ -195,15 +201,6 @@ if (isset($_POST['finaliser'])) {
 
             <div class="col-span-2 flex flex-col items-center justify-center" id="recap">
 
-                <?php
-                $restos_livraison = array();
-
-                foreach ($_SESSION['panier']['items'] as $i) {
-                    if (!in_array($i['restaurant'], $restos_livraison))
-                        array_push($restos_livraison, $i['restaurant']);
-                }
-                ?>
-
                 <h2 class="text-2xl lg:text-3xl font-bold mb-5">Livraison de <?php echo implode(", ", $restos_livraison) ?></h2>
 
                 <?php if ($isConnecte) : ?>
@@ -222,7 +219,7 @@ if (isset($_POST['finaliser'])) {
                             <script>
                                 document.getElementById("address-select").addEventListener("change", function() {
                                     if (this.value === "gerer") {
-                                        location = "compte.php?selection=1#ouvrir-adresses";
+                                        location = "compte.php?source=recapitulatif#ouvrir-adresses";
                                     }
                                 });
                             </script>

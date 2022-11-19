@@ -144,7 +144,7 @@ try {
 
     <?php foreach ($types_non_vides as $tnv) : ?>
         <div class="p-7 lg:mx-16">
-            <h2 class="text-2xl font-bold md:text-3xl text-slate-700 mb-5 ml-1"><?php echo $tnv; ?></h2>
+            <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1"><?php echo $tnv; ?></h2>
             <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
                 <?php foreach ($r['plats'] as $p) : ?>
                     <?php if ($p['type']['nom'] == $tnv) : ?>

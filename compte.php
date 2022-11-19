@@ -128,12 +128,18 @@ if (isset($_POST['ajouter_adresse']) && isset($conn)) {
 // Après avoir cliqué sur supprimer user
 if (isset($_POST['supprimer_user']) && isset($conn)) {
     do {
-        $query = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_utilisateur'";
-        $query2 = "DELETE rt FROM restaurants_tags AS rt JOIN restaurants ON rt.id_restaurant = restaurants.id WHERE restaurants.id_utilisateur='$id_utilisateur'";
-        $query3 = "DELETE FROM restaurants WHERE id_utilisateur='$id_utilisateur'";
-        $query4 = "DELETE FROM utilisateurs WHERE id='$id_utilisateur'";
+        // Supprimer les commandes de l'utilisateur
+        $query = "DELETE FROM commandes WHERE id_utilisateur='$id_utilisateur'";
+        // On supprime le lien entre l'adresse et l'utilisateur, puis on supprime les adresses qui ne sont liées à aucun autre utilisateur
+        // et à aucune commande d'un autre utilisateur
+        $query2 = "DELETE FROM utilisateurs_adresses WHERE id_utilisateur='$id_utilisateur'";
+        $query3 = "DELETE FROM adresses WHERE id NOT IN (SELECT id_adresse FROM utilisateurs_adresses) AND id NOT IN (SELECT id_adresse FROM commandes)";
+        // Supprimer les restaurants de l'utilisateur (cela va aussi supprimer tous les plats du restaurant)
+        $query4 = "DELETE FROM restaurants WHERE id_utilisateur='$id_utilisateur'";
+        // Enfin, supprimer l'utilisateur
+        $query5 = "DELETE FROM utilisateurs WHERE id='$id_utilisateur'";
 
-        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4)) {
+        if (mysqli_query($conn, $query) && mysqli_query($conn, $query2) && mysqli_query($conn, $query3) && mysqli_query($conn, $query4) && mysqli_query($conn, $query5)) {
             FermerConnexion($conn);
             // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
             $_SESSION['successMessage'] = "Votre compte a bien été supprimé";
@@ -235,23 +241,11 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
             break;
         }
 
-        // On vérifie que l'adresse n'est pas aussi liée à un autre utilisateur, dans ce cas on ne la supprime pas
-        $query_verif = "SELECT * FROM utilisateurs_adresses WHERE id_adresse='$id_adresse_a_suppr'";
-        $result_verif = mysqli_query($conn, $query_verif);
-        $count_users_avec_cette_adresse = mysqli_num_rows($result_verif);
-
-        // On vérifie que l'adresse n'est pas liée à une commande passée, dans ce cas on ne la supprime pas
-        $query_verif_2 = "SELECT * FROM commandes WHERE id_adresse='$id_adresse_a_suppr'";
-        $result_verif_2 = mysqli_query($conn, $query_verif_2);
-        $count_commandes_avec_cette_adresse = mysqli_num_rows($result_verif_2);
-
-        // Si l'adresse appartient à personne d'autre ET qu'elle n'est pas liée à une commande passée, on peut la supprimer
-        if ($count_users_avec_cette_adresse == 0 && $count_commandes_avec_cette_adresse == 0) {
-            $query2 = "DELETE FROM adresses WHERE id='$id_adresse_a_suppr'";
-            if (!mysqli_query($conn, $query2)) {
-                array_push($erreurs, mysqli_error($conn));
-                break;
-            }
+        // Si l'adresse appartient à personne d'autre ET qu'elle n'est pas liée à une commande passée, on peut totalement la supprimer
+        $query = "DELETE FROM adresses WHERE id='$id_adresse_a_suppr' AND id NOT IN (SELECT id_adresse FROM utilisateurs_adresses) AND id NOT IN (SELECT id_adresse FROM commandes)";
+        if (!mysqli_query($conn, $query)) {
+            array_push($erreurs, mysqli_error($conn));
+            break;
         }
 
         // On ajoute un message en variable de session pour qu'il puisse être affiché après le reload
@@ -715,12 +709,13 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
             <?php endif; ?>
 
             <div class="modal-action">
-                <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
-                <!-- Si on vient ici depuis le sélecteur d'adresse, on renvoie vers la page confirmation au lieu de rester sur la page de compte -->
-                <?php if (empty($_GET['selection'])) : ?>
-                    <a href="#" class="btn">Terminé</a>
-                <?php else : ?>
+                <!-- Si on vient ici depuis le sélecteur d'adresse, on renvoie vers la page d'où provient l'utilisateur au lieu de rester sur la page de compte -->
+                <?php if ($_GET['source'] == 'recapitulatif') : ?>
+                    <a class="btn btn-ghost" href="?ajouteradresse=1&source=recapitulatif">Ajouter une adresse</a>
                     <a href="recapitulatif.php" class="btn">Terminé</a>
+                <?php else : ?>
+                    <a class="btn btn-ghost" href="?ajouteradresse=1">Ajouter une adresse</a>
+                    <a href="#" class="btn">Terminé</a>
                 <?php endif; ?>
             </div>
         </div>
