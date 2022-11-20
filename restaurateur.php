@@ -7,7 +7,7 @@ if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION
     exit();
 }
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -418,8 +418,8 @@ try {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>Restaurateurs - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -427,7 +427,7 @@ try {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <!-- Si le seul resto de l'user est en attente de validation -->
     <?php if ($nb_approuves == 0 && $nb_en_attente == 1) : ?>
@@ -528,7 +528,7 @@ try {
                     <?php foreach ($restos as $r) : ?>
                         <?php if ($r['approuve'] == 'true') : ?>
                             <?php $auMoinsUnRestoApprouve = true; ?>
-                            <?php include('restocard.php'); ?>
+                            <?php include('components/restocard.php'); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
@@ -550,7 +550,7 @@ try {
                     <?php foreach ($restos as $r) : ?>
                         <?php if ($r['approuve'] == 'false') : ?>
                             <?php $auMoinsUnRestoEnAttente = true; ?>
-                            <?php include('restocard.php'); ?>
+                            <?php include('components/restocard.php'); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
@@ -643,7 +643,7 @@ try {
                     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
                         <?php foreach ($resto_a_modifier['plats'] as $p) : ?>
                             <?php if ($p['type']['nom'] == $tnv) : ?>
-                                <?php include('platcard.php'); ?>
+                                <?php include('components/platcard.php'); ?>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
@@ -693,7 +693,7 @@ try {
     <?php endif; ?>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
 </body>
 

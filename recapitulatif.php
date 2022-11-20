@@ -6,7 +6,7 @@ if ($_SESSION['panier']['nb_total'] == 0) {
     exit();
 }
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -138,8 +138,8 @@ if (isset($_POST['finaliser'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>Commande - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Librairie de confettis -->
@@ -149,7 +149,7 @@ if (isset($_POST['finaliser'])) {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <div class="flex items-center justify-center">
         <ul class="steps mx-auto sm:w-2/3 lg:w-1/2">
@@ -342,7 +342,7 @@ if (isset($_POST['finaliser'])) {
     <?php endif; ?>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
 </body>
 

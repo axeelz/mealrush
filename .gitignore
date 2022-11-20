@@ -1,9 +1,13 @@
-# On masque les config des modules (Tailwind...)
+# On masque les config des modules npm (Tailwind...)
 node_modules
 package-lock.json
 package.json
 tailwind.config.js
+
+# On masque les fichiers cachés et les images non nécessaires
 .DS_Store
 img/assets
+
+# On masque les informations sensibles et les packages externes
 /PHPMailer
-emailconfig.php
+config/emailconfig.php

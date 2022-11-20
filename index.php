@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -49,8 +49,8 @@ try {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>MealRush - Livraison de plats</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -58,7 +58,7 @@ try {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <div class="flex items-center p-4 max-w-100 bg-base-200 overflow-x-auto" id="tags-container">
         <?php if (!empty($_GET['tag'])) : ?>
@@ -87,7 +87,7 @@ try {
                 </div>
             </div>
         <?php else : ?>
-            <div class="hero min-h-fit" id="main-hero">
+            <div class="hero min-h-fit animate-in fade-in duration-500" id="main-hero">
                 <div class="hero-overlay bg-opacity-70"></div>
                 <div class="hero-content text-center text-neutral-content flex-col">
                     <img src="img/logo.png" class="w-56 rounded-lg shadow-2xl" />
@@ -109,7 +109,7 @@ try {
                     </div>
                 <?php else : ?>
                     <?php foreach ($restos as $r) : ?>
-                        <?php include('restocard.php'); ?>
+                        <?php include('components/restocard.php'); ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -135,7 +135,7 @@ try {
                     <?php foreach ($restos as $r) : ?>
                         <?php if (in_array($tnv, $r['tags'])) : ?>
                             <?php $auMoinsUnResto = true; ?>
-                            <?php include('restocard.php'); ?>
+                            <?php include('components/restocard.php'); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
@@ -166,7 +166,7 @@ try {
                 <?php foreach ($restos as $r) : ?>
                     <?php if (in_array($nom_tag_selectionne, $r['tags'])) : ?>
                         <?php $auMoinsUnResultat = true; ?>
-                        <?php include('restocard.php'); ?>
+                        <?php include('components/restocard.php'); ?>
                     <?php endif; ?>
                 <?php endforeach; ?>
                 <?php if (!isset($auMoinsUnResultat)) : ?>
@@ -185,7 +185,7 @@ try {
     <?php endif; ?>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
     <script>
         // Changer l'image de fond aléatoirement

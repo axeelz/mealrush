@@ -5,7 +5,7 @@ if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false) {
     exit();
 }
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -263,8 +263,8 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>Compte - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -272,7 +272,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <!-- Formulaire d'ajoutr d'adresse -->
     <?php if ($veutAjouterAdresse) : ?>
@@ -683,7 +683,7 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
     <?php endif; ?>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
     <div class="modal" id="ouvrir-adresses">
         <div class="modal-box text-center">

@@ -5,7 +5,7 @@ if (isset($_SESSION['connecte']) && $_SESSION['connecte'] == true) {
     exit();
 }
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     $conn = OuvrirConnexion();
 } catch (\Throwable $th) {
@@ -77,15 +77,15 @@ if (isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>Connexion - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 
 <body class="min-h-screen bg-base-200">
 
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <div class="flex align-middle justify-center">
         <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3">
@@ -126,7 +126,7 @@ if (isset($_POST['login'])) {
     </div>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
 </body>
 

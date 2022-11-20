@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -83,8 +83,8 @@ try {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title><?php echo $r['nom']; ?> - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -92,7 +92,7 @@ try {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <div class="hero">
         <div class="hero-content flex-col lg:flex-row">
@@ -148,7 +148,7 @@ try {
             <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
                 <?php foreach ($r['plats'] as $p) : ?>
                     <?php if ($p['type']['nom'] == $tnv) : ?>
-                        <?php include('platcard.php'); ?>
+                        <?php include('components/platcard.php'); ?>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </div>
@@ -156,7 +156,7 @@ try {
     <?php endforeach; ?>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
 </body>
 

@@ -7,7 +7,7 @@ if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] == false || $_SESSION
     exit();
 }
 
-include 'ouvrirconnexion.php';
+include 'config/ouvrirconnexion.php';
 try {
     // On se connecte à la BDD
     $conn = OuvrirConnexion();
@@ -147,8 +147,8 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="dist/output.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <title>Admin - MealRush</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -156,7 +156,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php include('components/navbar.php'); ?>
 
     <div class="hero bg-green min-h-[7rem] text-center">
         <div class="hero-content">
@@ -179,7 +179,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'false') : ?>
                     <?php $auMoinsUnRestoEnAttente = true; ?>
-                    <?php include('restocard.php'); ?>
+                    <?php include('components/restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
@@ -207,7 +207,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
             <?php foreach ($restos as $r) : ?>
                 <?php if ($r['approuve'] == 'true') : ?>
                     <?php $auMoinsUnRestoApprouve = true; ?>
-                    <?php include('restocard.php'); ?>
+                    <?php include('components/restocard.php'); ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
@@ -251,7 +251,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     </div>
 
     <!-- Footer -->
-    <?php include('footer.php'); ?>
+    <?php include('components/footer.php'); ?>
 
 </body>
 

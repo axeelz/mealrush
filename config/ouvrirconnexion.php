@@ -18,5 +18,7 @@ function FermerConnexion($conn)
     $conn->close();
 }
 
+// On initialise les tableaux qui serviront à ajouter les messages d'erreurs
+// ou les messages de succès
 $erreurs = array();
 $succes = array();

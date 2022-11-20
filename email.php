@@ -8,7 +8,7 @@ use \PHPMailer\PHPMailer\Exception;
 require_once('PHPMailer/src/Exception.php');
 require_once('PHPMailer/src/PHPMailer.php');
 require_once('PHPMailer/src/SMTP.php');
-require_once('emailconfig.php');
+require_once('config/emailconfig.php');
 
 $mail = new PHPMailer();
 $mail->isSMTP();

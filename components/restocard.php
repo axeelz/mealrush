@@ -2,15 +2,15 @@
 // Usage : Nécessite d'être dans un "foreach ($restos as $r)"
 ?>
 
-<div class="card shadow-md min-h-[380px] w-[310px] min-w-[310px] snap-center">
+<div class="card shadow-md min-h-[380px] w-[310px] min-w-[310px] snap-center animate-in zoom-in-75 duration-300">
     <?php if (basename($_SERVER['PHP_SELF']) == "restaurateur.php") : ?>
         <figure class="h-44 overflow-hidden">
-            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+            <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" loading="lazy" />
         </figure>
     <?php else : ?>
         <a href="restaurants.php?id=<?php echo $r['id']; ?>">
             <figure class="h-44 overflow-hidden">
-                <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" />
+                <img src="<?php echo $r['image']; ?>" alt="Image Restaurant" class="object-cover" onerror="if (this.src != 'img/error.png') this.src = 'img/error.png';" loading="lazy" />
             </figure>
         </a>
     <?php endif; ?>
