@@ -110,11 +110,12 @@ try {
                         <div class="stat-title">Noté</div>
                         <div class="stat-value">
                             4.5
+                            <div class="mask mask-star-2 bg-orange-400 w-6 h-6 inline-block"></div>
                             <!-- <script>
                                 document.write((Math.random() * (5 - 3) + 3).toFixed(1));
                             </script> -->
                         </div>
-                        <div class="stat-desc">/ 5</div>
+                        <div class="stat-desc">sur 5</div>
                     </div>
                     <div class="stat">
                         <div class="stat-title">Livré en</div>
