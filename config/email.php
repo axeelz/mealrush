@@ -1,5 +1,6 @@
 <?php
-// Paramètres PHPMailer
+// Script qui est appelé lors de l'envoi d'un mail (afin de pouvoir lancer l'envoi de mail en arrière plan
+// au lieu de bloquer l'utilisateur sur une page dont le chargement est très long)
 
 use \PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -8,7 +9,11 @@ use \PHPMailer\PHPMailer\Exception;
 require_once('PHPMailer/src/Exception.php');
 require_once('PHPMailer/src/PHPMailer.php');
 require_once('PHPMailer/src/SMTP.php');
+
+// Fichier en .gitignore contenant le mot de passe de l'email
 require_once('config/emailconfig.php');
+
+// Paramètres PHPMailer
 
 $mail = new PHPMailer();
 $mail->isSMTP();

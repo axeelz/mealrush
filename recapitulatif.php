@@ -106,7 +106,7 @@ if (isset($_POST['payer']) && isset($conn)) {
                     $contenu_mail .= nl2br("\nTotal avec charges : " . str_replace('.', ',', $_SESSION['panier']['prix_final']) . "€");
 
                     // On utilise exec pour effectuer la tache en arrière plan afin de ne pas bloquer le chargement de la page pour l'utilisateur
-                    exec(PHP_BINDIR . "/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
+                    exec(PHP_BINDIR . "/php " . realpath("config/email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
 
                     // Processus de commande terminé
                     $_SESSION['successMessage'] = "Commande enregistrée";

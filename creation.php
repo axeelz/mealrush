@@ -131,7 +131,7 @@ if (isset($_POST['signup']) && isset($conn)) {
         $contenu_mail = "<h4>Bienvenue, " . $prenom . "</h4><p>Vous venez de créer un compte chez nous, vous pouvez dès maintenant commander et vous régaler !</p>";
 
         // On utilise exec pour effectuer la tache en arrière plan afin de ne pas bloquer le chargement de la page pour l'utilisateur
-        exec(PHP_BINDIR . "/php " . realpath("email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
+        exec(PHP_BINDIR . "/php " . realpath("config/email.php") . " '" . $sujet_mail . "' '" . $contenu_mail . "' '" . $destinataire . "' 2>&1 &", $output);
 
         // On définit les variables de session et on redirige vers une page
         $_SESSION['connecte'] = true;
