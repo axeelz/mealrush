@@ -722,9 +722,9 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
     </div>
 
     <div class="modal" id="ouvrir-moyens-de-paiement">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">Moyens de paiement enregistrés</h3>
-            <p class="py-4"></p>
+        <div class="modal-box text-center">
+            <h3 class="font-bold text-lg mb-5">Moyens de paiement enregistrés</h3>
+            <p class="text-start">À venir !</p>
             <div class="modal-action">
                 <a href="#" class="btn">Terminé</a>
             </div>
