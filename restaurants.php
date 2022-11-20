@@ -104,28 +104,28 @@ try {
                         <div class="badge badge-ghost"><?php echo $t; ?></div>
                     <?php endforeach; ?>
                 </div>
+                <!-- Pas encore implémenté, valeurs fictives -->
                 <div class="stats shadow mt-4 text-center">
-
                     <div class="stat">
                         <div class="stat-title">Noté</div>
                         <div class="stat-value">
-                            <script>
+                            4.5
+                            <!-- <script>
                                 document.write((Math.random() * (5 - 3) + 3).toFixed(1));
-                            </script>
+                            </script> -->
                         </div>
                         <div class="stat-desc">/ 5</div>
                     </div>
-
                     <div class="stat">
                         <div class="stat-title">Livré en</div>
                         <div class="stat-value">
-                            <script>
+                            19
+                            <!-- <script>
                                 document.write(Math.round(Math.random() * (30 - 5) + 5));
-                            </script>
+                            </script> -->
                         </div>
                         <div class="stat-desc">minutes</div>
                     </div>
-
                 </div>
             </div>
         </div>

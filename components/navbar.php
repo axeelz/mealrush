@@ -166,11 +166,13 @@ if (isset($_POST['moins1'])) {
 
                     <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
                         <div class="w-full flex justify-between h-12 items-center">
-                            <p>
-                                <?php echo $i['nom']; ?>
-                                <span class="badge badge-md badge-outline"><?php echo $i['quantite']; ?></span>
-                            </p>
-                            <form method="post" class="min-w-[30%] flex items-center justify-center">
+                            <div class="w-2/3 flex justify-between">
+                                <div><?php echo $i['nom']; ?></div>
+                                <div class="flex items-center justify-center">
+                                    <span class="badge badge-md badge-outline"><?php echo $i['quantite']; ?></span>
+                                </div>
+                            </div>
+                            <form method="post" class="w-1/3 flex items-center justify-center">
                                 <div class="gap-2">
                                     <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id']; ?>">
                                         -
