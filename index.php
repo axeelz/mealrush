@@ -79,7 +79,7 @@ try {
                     <div class="max-w-md">
                         <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
                         <p class="py-6">
-                            Recevez votre plat sur le pas de votre porte en un rien de temps avec MealRush.
+                            Recevez vos plats sur le pas de votre porte en un rien de temps avec MealRush.
                         </p>
                         <a class="btn bg-white text-black hover:text-white" href="#restos-container">On mange quoi ?</a>
                         <a class="btn bg-blue text-black hover:text-white ml-1" href="connexion.php">Se connecter</a>
