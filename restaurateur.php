@@ -16,7 +16,7 @@ try {
 
     // On récupère les restaurants non approuvés pour les afficher
     $restos = array();
-    $query = "SELECT * FROM restaurants WHERE id_utilisateur = '$id_utilisateur'";
+    $query = "SELECT * FROM restaurants WHERE id_utilisateur = '$id_utilisateur' ORDER BY id DESC";
     $result = mysqli_query($conn, $query);
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $id_restaurant = $row['id'];

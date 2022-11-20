@@ -117,7 +117,7 @@ try {
 
         <?php
         $tags_non_vides = array();
-        $query = "SELECT DISTINCT id_tag FROM restaurants_tags JOIN restaurants ON restaurants_tags.id_restaurant = restaurants.id WHERE restaurants.approuve = 'true'";
+        $query = "SELECT DISTINCT id_tag FROM restaurants_tags JOIN restaurants ON restaurants_tags.id_restaurant = restaurants.id WHERE restaurants.approuve = 'true' ORDER BY id_tag DESC";
         $result = mysqli_query($conn, $query);
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
             foreach ($tags as $t) {
@@ -145,14 +145,10 @@ try {
     <?php else : ?>
 
         <?php
-        try {
-            foreach ($tags as $t) {
-                if ($_GET['tag'] == $t['id_tag']) {
-                    $nom_tag_selectionne = $t['nom_tag'];
-                }
+        foreach ($tags as $t) {
+            if ($_GET['tag'] == $t['id_tag']) {
+                $nom_tag_selectionne = $t['nom_tag'];
             }
-        } catch (\Throwable $th) {
-            array_push($erreurs, $th->getMessage());
         }
         ?>
 
