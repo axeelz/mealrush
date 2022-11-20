@@ -170,7 +170,7 @@ if (isset($_POST['moins1'])) {
                                 <?php echo $i['nom']; ?>
                                 <span class="badge badge-md badge-outline"><?php echo $i['quantite']; ?></span>
                             </p>
-                            <form method="post">
+                            <form method="post" class="min-w-[30%] flex items-center justify-center">
                                 <div class="gap-2">
                                     <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id']; ?>">
                                         -

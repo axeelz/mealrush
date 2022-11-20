@@ -3620,6 +3620,15 @@ body[dir="rtl"] .checkbox:checked,
   min-width: 310px;
 }
 
+.min-w-fit {
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+}
+
+.min-w-\[30\%\] {
+  min-width: 30%;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
@@ -3778,6 +3787,10 @@ body[dir="rtl"] .checkbox:checked,
 
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.break-words {
+  overflow-wrap: break-word;
 }
 
 .rounded {
