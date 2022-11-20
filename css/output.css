@@ -4173,6 +4173,8 @@ body[dir="rtl"] .checkbox:checked,
   animation-duration: 300ms;
 }
 
+/* Construction du css : npx tailwindcss -i ./css/input.css -o ./css/output.css --watch */
+
 .first\:ml-auto:first-child {
   margin-left: auto;
 }
