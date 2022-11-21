@@ -125,6 +125,7 @@ if (isset($_POST['moins1'])) {
         </a>
     </div>
     <div class="flex-none">
+        <!-- Pas implémenté la recherche pour l'instant, à faire -->
         <div class="form-control hidden md:block">
             <input type="text" placeholder="Chercher un restaurant" class="input input-bordered h-10" />
         </div>
@@ -229,6 +230,7 @@ if (isset($_POST['moins1'])) {
     </div>
 </div>
 <!-- Barre de recherche en dessous de la navbar pour les petits écrans -->
+<!-- Pas implémenté la recherche pour l'instant, à faire -->
 <div class="flex md:hidden justify-center bg-white">
     <div class="form-control w-2/3 mb-3">
         <input type="text" placeholder="Chercher un restaurant" class="input input-bordered" />
