@@ -3,6 +3,7 @@
 Site de livraison de plats à domicile.
 
 -   fait en PHP, HTML, CSS (avec Tailwind et daisyUI), JavaScript, MariaDB
+-   suivi et gestion du projet avec Trello et Git
 
 ### Le Trello contenant les différentes tâches/étapes est disponible [ici](https://trello.com/b/D7eTdd7N/mealrush) 🔗
 
