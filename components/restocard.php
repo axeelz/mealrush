@@ -47,7 +47,7 @@
                     <?php else : ?>
                         <button name="approuver" value="<?php echo $r['id']; ?>" class="btn btn-success mt-2">Approuver</button>
                     <?php endif; ?>
-                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2">Supprimer</button>
+                    <button name="supprimer" value="<?php echo $r['id']; ?>" class="btn btn-error mt-2" onClick="return confirm('Cette action est irreversible, voulez-vous vraiment supprimer ce restaurant ?');">Supprimer</button>
                 </form>
             <?php elseif (basename($_SERVER['PHP_SELF']) == "restaurateur.php") : ?>
                 <form method="post">
