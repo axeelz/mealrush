@@ -9,6 +9,13 @@ Site de livraison de plats à domicile.
 
 ## Vue d'ensemble
 
+### Présentation
+
+<img width="645" alt="image" src="https://user-images.githubusercontent.com/83944331/203101346-80f49daa-e42e-4c33-87ff-7e1a64c8dd0c.png">
+<img width="645" alt="image" src="https://user-images.githubusercontent.com/83944331/203101281-a3acc93f-2d01-466c-be93-a92c63c5f4ec.png">
+<img width="645" alt="image" src="https://user-images.githubusercontent.com/83944331/203101409-5b55a15a-ad67-4054-8cb2-64f1312387e0.png">
+
+
 ### Ordinateur
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202879530-6e1712b5-d019-44ef-b08a-c85711d62a7c.png">
