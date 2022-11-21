@@ -1,8 +1,14 @@
 # MealRush
 
-### Site de livraison de plats à domicile
+Site de livraison de plats à domicile.
 
--   [Trello - tâches et idées](https://trello.com/b/D7eTdd7N/mealrush)
+-   fait en PHP, HTML, CSS (avec Tailwind et daisyUI), JavaScript, MariaDB
+
+### Le Trello contenant les différentes tâches/étapes est disponible [ici](https://trello.com/b/D7eTdd7N/mealrush) 🔗
+
+## Vue d'ensemble
+
+### Ordinateur
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202879530-6e1712b5-d019-44ef-b08a-c85711d62a7c.png">
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202879566-32fe2ad1-9e46-41dd-8ac1-0b3a09478d46.png">
