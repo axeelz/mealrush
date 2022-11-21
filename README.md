@@ -1,4 +1,5 @@
 # MealRush
+
 ### Site de livraison de plats à domicile
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202879530-6e1712b5-d019-44ef-b08a-c85711d62a7c.png">
@@ -10,6 +11,4 @@
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202879950-e269fb8c-5ee3-4bb5-a251-70808d23be4c.png">
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/83944331/202880034-b7aa82c9-661b-4cd7-8ac7-ca04c0fa7265.png">
 
-
--   [Trello - tâches et idées](https://trello.com/b/D7eTdd7N/mealrush-t%C3%A2ches-et-id%C3%A9es)
--   [Trello - use cases](https://trello.com/b/3rKTeh5u/mealrush-use-cases)
+-   [Trello - tâches et idées](https://trello.com/b/D7eTdd7N/mealrush)
