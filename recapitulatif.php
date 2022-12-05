@@ -247,12 +247,12 @@ if (isset($_POST['finaliser'])) {
 
                 <?php foreach ($_SESSION['panier']['items'] as $i) : ?>
                     <div class="w-2/3 flex justify-between h-24 items-center">
-                        <p class="text-lg">
+                        <div class="w-2/3">
                             <?php echo $i['nom']; ?>
                             <span class="badge badge-xl badge-outline"><?php echo $i['quantite']; ?></span><br />
                             <?php echo str_replace(".", ",", $i['prix']); ?>€
-                        </p>
-                        <form method="post">
+                        </div>
+                        <form method="post" class="w-1/3 flex items-center justify-end">
                             <div class="gap-2">
                                 <button name="moins1" class="btn btn-circle btn-outline btn-sm" value="<?php echo $i['id']; ?>">
                                     -

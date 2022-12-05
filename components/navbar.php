@@ -224,7 +224,17 @@ if (isset($_POST['moins1'])) {
             </div>
         <?php else : ?>
             <ul class="menu menu-horizontal p-0">
-                <li><a class="btn btn-ghost" href="connexion.php">Se connecter</a></li>
+                <li class="hidden md:block">
+                    <a class="btn btn-ghost" href="connexion.php">Se connecter</a>
+                </li>
+                <!-- Le bouton se connecter devient une icône sur petits écrans -->
+                <li class="md:hidden">
+                    <a class="btn btn-ghost" href="connexion.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
+                        </svg>
+                    </a>
+                </li>
             </ul>
         <?php endif; ?>
     </div>

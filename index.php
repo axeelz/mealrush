@@ -75,9 +75,9 @@ try {
             <div class="hero min-h-fit" id="main-hero">
                 <div class="hero-overlay bg-opacity-70"></div>
                 <div class="hero-content text-center text-neutral-content flex-col">
-                    <img src="img/logo.png" class="w-72 rounded-lg shadow-2xl mb-3" />
+                    <img src="img/logo.png" class="w-56 md:w-72 rounded-lg shadow-2xl mb-3" />
                     <div class="max-w-md">
-                        <h1 class="text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
+                        <h1 class="text-3xl md:text-5xl font-bold">Vos repas livrés en quelques clics&nbsp;!</h1>
                         <p class="py-6">
                             Recevez vos plats sur le pas de votre porte en un rien de temps avec MealRush.
                         </p>
@@ -155,7 +155,7 @@ try {
         <div class="hero bg-green min-h-[7rem]">
             <div class="hero-content">
                 <div class="max-w-md">
-                    <h1 class="text-5xl font-bold text-white"><?php echo $nom_tag_selectionne ?></h1>
+                    <h1 class="text-3xl md:text-5xl font-bold text-white"><?php echo $nom_tag_selectionne ?></h1>
                 </div>
             </div>
         </div>

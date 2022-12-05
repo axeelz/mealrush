@@ -514,7 +514,7 @@ try {
             <div class="hero bg-green min-h-[12rem] text-center">
                 <div class="hero-content">
                     <div class="max-w-md">
-                        <h1 class="text-5xl font-bold text-white">Mes restaurants</h1>
+                        <h1 class="text-3xl md:text-5xl font-bold text-white">Mes restaurants</h1>
                         <form method="post">
                             <button name="ajouter" class="btn bg-white text-black hover:text-white mt-5">Ajouter un restaurant</button>
                         </form>
@@ -567,7 +567,7 @@ try {
             <div class="hero bg-green min-h-[12rem] text-center">
                 <div class="hero-content">
                     <div class="max-w-md">
-                        <h1 class="text-5xl font-bold text-white">Gestion restaurant</h1>
+                        <h1 class="text-3xl md:text-5xl font-bold text-white">Gestion restaurant</h1>
                     </div>
                 </div>
             </div>

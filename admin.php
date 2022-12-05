@@ -161,7 +161,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
     <div class="hero bg-green min-h-[7rem] text-center">
         <div class="hero-content">
             <div class="max-w-md">
-                <h1 class="text-5xl font-bold text-white">Salut, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
+                <h1 class="text-3xl md:text-5xl font-bold text-white">Salut, <?php echo $_SESSION['prenom']; ?>&nbsp;!</h1>
             </div>
         </div>
     </div>

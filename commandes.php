@@ -84,7 +84,7 @@ try {
     <div class="hero bg-green min-h-[12rem] text-center">
         <div class="hero-content">
             <div class="max-w-md">
-                <h1 class="text-5xl font-bold text-white">Mes commandes</h1>
+                <h1 class="text-3xl md:text-5xl font-bold text-white">Mes commandes</h1>
             </div>
         </div>
     </div>

@@ -5,18 +5,26 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Pas de full majuscules dans les boutons */
 .btn {
     text-transform: none;
 }
 
+/* Couleur steps element */
 li a:active {
     background-color: none;
 }
 
+/* Pour animation de sortie des notifs */
 .alert.temp {
     opacity: 100;
     transform: scale(1);
     transition: 0.5s ease opacity, 0.5s ease transform;
+}
+
+/* Fix les notifs qui passent en dessous des tableaux */
+.table th:first-child {
+    z-index: 0 !important;
 }
 
 /* ----------------------------------------------
