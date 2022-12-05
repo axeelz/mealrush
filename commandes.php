@@ -34,6 +34,7 @@ try {
         // On récupère les images des restos
         $images = array();
         foreach ($restos_livraison as $r) {
+            $r = mysqli_real_escape_string($conn, $r);
             $query_get_img = "SELECT `image` FROM `restaurants` WHERE nom='$r' LIMIT 1";
             $result_get_img = mysqli_query($conn, $query_get_img);
             $data_resto = mysqli_fetch_assoc($result_get_img);

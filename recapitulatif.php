@@ -92,7 +92,7 @@ if (isset($_POST['payer']) && isset($conn)) {
         foreach ($_SESSION['adresses'] as $a) {
             if ($a['id'] == $id_adresse) {
                 // Insertion de la commande en base de donnée, avec le panier enregistré en json
-                $panier = json_encode($_SESSION['panier'], JSON_UNESCAPED_UNICODE);
+                $panier = mysqli_real_escape_string($conn, json_encode($_SESSION['panier'], JSON_UNESCAPED_UNICODE));
                 $query = "INSERT INTO `commandes` (`montant`, `panier`,`id_utilisateur`, `id_adresse`, `livraison`) VALUES ('$montant', '$panier', '$id_utilisateur', '$id_adresse', '$heure_livraison')";
 
                 if (mysqli_query($conn, $query)) {
