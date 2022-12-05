@@ -589,7 +589,15 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
                     <div class="avatar placeholder mx-auto mt-2">
                         <div class="bg-neutral-focus text-neutral-content rounded-full w-24">
                             <!-- On récupère la première lettre du prenom pour l'avatar -->
-                            <span class="text-3xl uppercase"><?php echo mb_substr($_SESSION['prenom'], 0, 1); ?></span>
+                            <span class="text-3xl uppercase">
+                                <?php
+                                try {
+                                    echo mb_substr($_SESSION['prenom'], 0, 1);
+                                } catch (\Throwable $th) {
+                                    array_push($erreurs, "mb_substr n'est pas installé sur la machine");
+                                }
+                                ?>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body items-center text-center p-3">
@@ -651,7 +659,15 @@ if (isset($_POST['supprimer_adresse']) && isset($conn)) {
                     <div class="avatar placeholder mx-auto mt-5">
                         <div class="bg-neutral-focus text-neutral-content rounded-full w-24">
                             <!-- On récupère la première lettre du prenom pour l'avatar -->
-                            <span class="text-3xl uppercase"><?php echo mb_substr($_SESSION['prenom'], 0, 1); ?></span>
+                            <span class="text-3xl uppercase">
+                                <?php
+                                try {
+                                    echo mb_substr($_SESSION['prenom'], 0, 1);
+                                } catch (\Throwable $th) {
+                                    array_push($erreurs, "mb_substr n'est pas installé sur la machine");
+                                }
+                                ?>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body">

@@ -227,6 +227,7 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
         <h2 class="text-2xl font-bold md:text-3xl opacity-80 mb-5 ml-1">Utilisateurs</h2>
         <div class="flex items-center gap-4 pb-5 px-1 overflow-x-scroll">
             <?php foreach ($users as $u) : ?>
+                <?php $auMoinsUnUtilisateur = true; ?>
                 <div class="card w-96 bg-base-100 shadow-md">
                     <div class="card-body">
                         <h2 class="card-title">
@@ -248,6 +249,16 @@ if (isset($_POST['supprimer_user']) && isset($conn)) {
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php if (!isset($auMoinsUnUtilisateur)) : ?>
+            <div class="alert shadow-lg md:w-1/2 mx-auto">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Vous êtes le seul utilisateur</span>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Footer -->

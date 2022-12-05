@@ -158,7 +158,7 @@ try {
                 <p>Le <?php echo date("d/m/Y", strtotime($date_commande)) . " à " . date('H:i', strtotime($heure_commande)); ?></p>
             </div>
             <?php foreach ($itemsPayes as $i) : ?>
-                <div class="flex justify-between p-3">
+                <div class="flex justify-between p-3 gap-3">
                     <div>
                         <span class="badge badge-xl badge-outline"><?php echo $i['quantite']; ?></span>
                         <?php echo $i['nom']; ?>

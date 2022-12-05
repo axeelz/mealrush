@@ -462,7 +462,7 @@ try {
                         <p class="py-6">Ajoutez votre restaurant sur MealRush et attirez de nouveaux clients&nbsp;!</p>
                         <?php if ($veutAjouterRestaurant) : ?>
                             <form method="post">
-                                <button name="annuler" class="btn bg-white text-black hover:text-white">Annuler l'opération</button>
+                                <button name="annuler" class="btn bg-white text-black hover:text-white">Revenir à mes restaurants</button>
                             </form>
                         <?php endif; ?>
                     </div>

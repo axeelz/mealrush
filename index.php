@@ -81,8 +81,8 @@ try {
                         <p class="py-6">
                             Recevez vos plats sur le pas de votre porte en un rien de temps avec MealRush.
                         </p>
-                        <a class="btn bg-white text-black hover:text-white" href="#restos-container">On mange quoi ?</a>
-                        <a class="btn bg-blue text-black hover:text-white ml-1" href="connexion.php">Se connecter</a>
+                        <a class="btn bg-white text-black hover:text-white border-none" href="#restos-container">On mange quoi ?</a>
+                        <a class="btn bg-blue text-black hover:text-white ml-1 border-none" href="connexion.php">Se connecter</a>
                     </div>
                 </div>
             </div>
