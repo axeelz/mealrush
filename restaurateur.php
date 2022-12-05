@@ -625,7 +625,7 @@ try {
             <div class="divider" id="menu">Gestion du menu</div>
 
             <div class="flex content-center justify-center mb-5">
-                <label for="ajout-plat" class="btn btn-wide bg-blue text-black border-none hover:text-white mt-3">Ajouter un plat</label>
+                <label for="ajout-plat" class="btn btn-wide mt-3">Ajouter un plat</label>
             </div>
 
             <?php
