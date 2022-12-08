@@ -87,8 +87,8 @@ if (isset($_POST['login'])) {
 
     <?php include('components/navbar.php'); ?>
 
-    <div class="flex align-middle justify-center">
-        <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3">
+    <div class="flex justify-center">
+        <div class="rounded-xl shadow-xl bg-base-100 p-10 m-5 lg:m-10 lg:w-1/3 flex flex-col items-center">
             <img src="img/logo-blanc.png" alt="" class="w-64 mx-auto">
             <div class="divider"></div>
             <h1 class="text-xl font-bold md:text-2xl mb-5">
